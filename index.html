@@ -7,367 +7,299 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--nfl-blue:#013369;--nfl-red:#D50A0A;--nfl-gold:#FFB612;--bg:#080818;--card:#111128;--border:#1e2050}
-body{font-family:'Arial Black',Arial,sans-serif;background:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden}
-.screen{display:none}
-.screen.active{display:flex;flex-direction:column;min-height:100vh}
+body{font-family:Arial Black,Arial,sans-serif;background:#080818;color:#fff;min-height:100vh}
+.hidden{display:none!important}
 
-/* ── WELCOME ── */
-#welcomeScreen{align-items:center;justify-content:flex-start;padding:20px;background:radial-gradient(ellipse at top,#0d1b3e 0%,#080818 70%)}
-.nfl-header{text-align:center;margin-bottom:24px;padding-top:10px}
-.nfl-shield{font-size:80px;line-height:1}
-.nfl-brand{font-size:44px;font-weight:900;background:linear-gradient(180deg,#FFB612 0%,#D50A0A 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px}
-.nfl-sub{font-size:14px;letter-spacing:6px;color:#FFB612;text-transform:uppercase;margin-top:4px}
-.welcome-box{background:rgba(1,51,105,0.25);border:2px solid rgba(255,182,18,0.25);border-radius:20px;padding:32px;max-width:460px;width:100%;backdrop-filter:blur(12px)}
-.welcome-box h2{font-size:18px;color:#FFB612;text-align:center;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px}
-.name-input{width:100%;padding:14px 18px;font-size:18px;font-family:inherit;font-weight:bold;background:rgba(255,255,255,0.08);border:2px solid rgba(255,182,18,0.5);border-radius:10px;color:#fff;text-align:center;margin-bottom:16px;outline:none;transition:border-color .2s}
-.name-input::placeholder{color:rgba(255,255,255,0.3)}
-.name-input:focus{border-color:#FFB612;box-shadow:0 0 18px rgba(255,182,18,0.25)}
-.start-btn{width:100%;padding:16px;font-size:18px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:3px;background:linear-gradient(135deg,#D50A0A 0%,#013369 100%);border:none;border-radius:10px;color:#fff;cursor:pointer;transition:all .25s}
-.start-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(213,10,10,0.45)}
-.qr-section{margin-top:24px;text-align:center}
-.qr-label{font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
-#qrcode canvas,#qrcode img{border:4px solid rgba(255,255,255,0.9);border-radius:8px}
-.qr-url{font-size:11px;color:#666;margin-top:8px;word-break:break-all}
-.how-to-play{margin-top:20px;background:rgba(0,0,0,0.3);border-radius:10px;padding:14px;font-size:12px;color:#aaa;line-height:1.7}
-.how-to-play b{color:#FFB612}
+/* WELCOME */
+#welcome{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at top,#0d1b3e,#080818)}
+.logo-area{text-align:center;margin-bottom:24px}
+.logo-football{font-size:72px}
+.logo-title{font-size:42px;font-weight:900;background:linear-gradient(180deg,#FFB612,#D50A0A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-sub{font-size:13px;letter-spacing:5px;color:#FFB612;text-transform:uppercase;margin-top:4px}
+.welcome-box{background:rgba(1,51,105,.25);border:2px solid rgba(255,182,18,.3);border-radius:20px;padding:32px;max-width:440px;width:100%}
+.welcome-box h2{text-align:center;font-size:16px;letter-spacing:3px;color:#FFB612;text-transform:uppercase;margin-bottom:18px}
+#nameInput{width:100%;padding:14px;font-size:18px;font-family:inherit;font-weight:bold;background:rgba(255,255,255,.08);border:2px solid rgba(255,182,18,.5);border-radius:10px;color:#fff;text-align:center;margin-bottom:14px;outline:none}
+#nameInput:focus{border-color:#FFB612}
+#kickoffBtn{width:100%;padding:16px;font-size:18px;font-family:inherit;font-weight:900;text-transform:uppercase;letter-spacing:3px;background:linear-gradient(135deg,#D50A0A,#013369);border:none;border-radius:10px;color:#fff;cursor:pointer;transition:all .2s}
+#kickoffBtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(213,10,10,.4)}
+#kickoffBtn:active{transform:translateY(0)}
+.qr-wrap{margin-top:22px;text-align:center}
+.qr-label{font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+#qrcode canvas,#qrcode img{border:3px solid #fff;border-radius:6px}
+.qr-url-txt{font-size:10px;color:#555;margin-top:6px}
+.how-to{margin-top:18px;background:rgba(0,0,0,.3);border-radius:8px;padding:12px;font-size:11px;color:#999;line-height:1.8}
+.how-to b{color:#FFB612}
 
-/* ── GAME HEADER ── */
-.game-header{background:linear-gradient(135deg,#013369 0%,#0a0a1a 50%,#D50A0A 100%);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(255,182,18,0.2)}
-.header-left{display:flex;align-items:center;gap:12px}
-.header-logo{font-size:22px;font-weight:900}
-.player-name-tag{background:rgba(255,182,18,0.15);border:1px solid rgba(255,182,18,0.4);border-radius:20px;padding:4px 12px;font-size:13px;color:#FFB612}
-.header-stats{display:flex;gap:16px}
-.stat{text-align:center}
-.stat-val{font-size:18px;font-weight:900;color:#FFB612;line-height:1}
-.stat-lbl{font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase}
-.coll-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:#fff;padding:7px 13px;font-family:inherit;font-weight:bold;cursor:pointer;font-size:12px;transition:all .2s}
-.coll-btn:hover{background:rgba(255,255,255,0.2)}
+/* GAME */
+#game{min-height:100vh;display:flex;flex-direction:column}
+.hdr{background:linear-gradient(90deg,#013369,#080818,#3a0a0a);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,182,18,.2)}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-logo{font-size:20px;font-weight:900}
+.hdr-name{background:rgba(255,182,18,.15);border:1px solid rgba(255,182,18,.4);border-radius:16px;padding:3px 12px;font-size:13px;color:#FFB612}
+.hdr-stats{display:flex;gap:14px}
+.hdr-stat{text-align:center}
+.hdr-stat-v{font-size:17px;font-weight:900;color:#FFB612;line-height:1}
+.hdr-stat-l{font-size:9px;color:#777;text-transform:uppercase}
+.coll-btn-hdr{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);border-radius:7px;color:#fff;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer}
+.coll-btn-hdr:hover{background:rgba(255,255,255,.15)}
 
-/* ── PROGRESS BAR ── */
-.progress-strip{background:rgba(0,0,0,0.35);padding:8px 16px;display:flex;gap:18px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.05);flex-wrap:wrap}
-.prog-item{display:flex;align-items:center;gap:8px;font-size:11px}
-.prog-bar{width:70px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;border-radius:3px;transition:width .6s ease}
-.pf-player{background:#aaa}
-.pf-legend{background:#FFB612}
-.pf-ultra{background:#cc44ff}
-.pf-team{background:#00cc88}
+/* Progress */
+.prog-strip{background:rgba(0,0,0,.3);padding:7px 16px;display:flex;gap:16px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.04)}
+.prog-it{display:flex;align-items:center;gap:7px;font-size:11px}
+.prog-bar{width:65px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .5s}
+.pf-p{background:#aaa}
+.pf-l{background:#FFB612}
+.pf-u{background:#cc44ff}
+.pf-t{background:#00cc88}
 
-/* ── DIVISION TABS ── */
-.div-tabs{background:rgba(0,0,0,0.25);padding:8px 14px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,0.05)}
-.div-tabs::-webkit-scrollbar{display:none}
-.div-tab{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:16px;color:#ccc;padding:5px 13px;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:inherit}
-.div-tab:hover{border-color:#FFB612;color:#FFB612}
-.div-tab.active{background:rgba(1,51,105,0.6);border-color:#FFB612;color:#FFB612;font-weight:bold}
-.div-tab.done{border-color:#00cc88;color:#00cc88}
+/* Division tabs */
+.div-tabs{background:rgba(0,0,0,.2);padding:8px 14px;display:flex;gap:7px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.04)}
+.div-tabs::-webkit-scrollbar{height:3px}
+.div-tabs::-webkit-scrollbar-thumb{background:rgba(255,182,18,.3);border-radius:2px}
+.d-tab{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:14px;color:#bbb;padding:5px 12px;font-size:11px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s}
+.d-tab:hover{border-color:#FFB612;color:#FFB612}
+.d-tab.active{background:rgba(1,51,105,.6);border-color:#FFB612;color:#FFB612;font-weight:bold}
+.d-tab.done{border-color:#00cc88;color:#00cc88}
 
-/* ── QUESTION AREA ── */
-.question-area{flex:1;display:flex;flex-direction:column;align-items:center;padding:16px;gap:14px;overflow-y:auto}
-.q-division-badge{background:rgba(1,51,105,0.4);border:1px solid rgba(1,51,105,0.8);border-radius:20px;padding:5px 18px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7aadff}
-.q-card{background:var(--card);border:2px solid rgba(255,182,18,0.2);border-radius:16px;padding:20px 24px;max-width:680px;width:100%;text-align:center}
-.q-num{font-size:11px;color:#FFB612;letter-spacing:2px;margin-bottom:8px;text-transform:uppercase}
-.q-text{font-size:19px;font-weight:bold;line-height:1.45;color:#eee}
-.footballs-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;max-width:580px;width:100%}
-.fb-btn{background:var(--card);border:2px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px 10px 8px;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:inherit;position:relative;overflow:hidden}
-.fb-btn:hover:not(.disabled){transform:translateY(-3px);border-color:#FFB612;box-shadow:0 8px 24px rgba(255,182,18,0.25)}
-.fb-btn.correct{border-color:#00ee88 !important;background:rgba(0,238,136,0.12) !important;animation:cPulse .5s ease}
-.fb-btn.wrong{border-color:#ff4444 !important;background:rgba(255,68,68,0.1) !important;animation:wShake .35s ease}
-.fb-btn.disabled{cursor:not-allowed;pointer-events:none;opacity:.65}
-.fb-teamname{font-size:13px;font-weight:bold;color:#ddd}
-@keyframes cPulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
-@keyframes wShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+/* Question */
+.q-area{flex:1;display:flex;flex-direction:column;align-items:center;padding:16px;gap:14px;overflow-y:auto}
+.q-badge{background:rgba(1,51,105,.4);border:1px solid rgba(1,51,105,.8);border-radius:16px;padding:4px 16px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7aadff}
+.q-card{background:#111128;border:2px solid rgba(255,182,18,.2);border-radius:14px;padding:20px 22px;max-width:660px;width:100%;text-align:center}
+.q-num{font-size:11px;color:#FFB612;letter-spacing:2px;margin-bottom:7px;text-transform:uppercase}
+.q-text{font-size:18px;font-weight:bold;line-height:1.45;color:#eee}
+.fb-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:560px;width:100%}
 
-/* ── FEEDBACK TOAST ── */
-#feedbackToast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.92);border-radius:14px;padding:18px 36px;text-align:center;z-index:300;display:none;min-width:220px;pointer-events:none}
-#feedbackToast.show{display:block;animation:toastIn .25s ease}
-#feedbackToast.correct-toast{border:2px solid #00ee88;color:#00ee88}
-#feedbackToast.wrong-toast{border:2px solid #ff4444;color:#ff4444}
-@keyframes toastIn{from{opacity:0;transform:translate(-50%,-60%)}to{opacity:1;transform:translate(-50%,-50%)}}
-.toast-icon{font-size:36px;margin-bottom:6px}
-.toast-msg{font-size:15px;font-weight:bold}
+/* Football buttons */
+.fb-btn{background:#111128;border:2px solid rgba(255,255,255,.1);border-radius:14px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:inherit;transition:all .2s;position:relative}
+.fb-btn:hover{border-color:#FFB612;transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,182,18,.2)}
+.fb-ball{width:100px;height:65px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;letter-spacing:1px;color:#fff;text-shadow:1px 1px 3px rgba(0,0,0,.8);position:relative;overflow:hidden}
+.fb-ball::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent,rgba(0,0,0,.2));border-radius:50%}
+.fb-ball::after{content:'';position:absolute;left:50%;top:5px;bottom:5px;width:2px;background:rgba(255,255,255,.6);transform:translateX(-50%)}
+.fb-city{font-size:12px;color:#ccc;font-weight:bold}
+.fb-btn.correct{border-color:#00ee88!important;background:rgba(0,238,136,.1)!important}
+.fb-btn.correct .fb-ball{box-shadow:0 0 20px rgba(0,238,136,.5)}
+.fb-btn.wrong{border-color:#ff4444!important;background:rgba(255,68,68,.08)!important}
+.fb-btn.disabled{pointer-events:none;opacity:.6}
+@keyframes cPop{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes wShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb-btn.correct{animation:cPop .4s ease}
+.fb-btn.wrong{animation:wShake .3s ease}
 
-/* ── DIVISION CASE ── */
-.div-case{background:rgba(0,0,0,0.45);border-top:2px solid rgba(255,182,18,0.2);padding:14px 16px 18px}
-.case-title{text-align:center;font-size:11px;letter-spacing:4px;color:#FFB612;text-transform:uppercase;margin-bottom:12px;font-weight:900}
+/* Case */
+.div-case{background:rgba(0,0,0,.4);border-top:2px solid rgba(255,182,18,.2);padding:14px 16px 18px}
+.case-title{text-align:center;font-size:11px;letter-spacing:4px;color:#FFB612;text-transform:uppercase;margin-bottom:11px;font-weight:900}
 .case-slots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.case-slot{background:rgba(255,255,255,0.04);border:2px dashed rgba(255,255,255,0.15);border-radius:12px;width:88px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all .5s;position:relative}
-.case-slot.filled{border-style:solid;border-color:#FFB612;background:rgba(255,182,18,0.08);box-shadow:0 0 12px rgba(255,182,18,0.2)}
-.case-slot-label{font-size:10px;color:rgba(255,255,255,0.4)}
-.case-empty-icon{font-size:20px;opacity:.2}
-.case-checkmark{position:absolute;top:-6px;right:-6px;background:#00ee88;color:#000;border-radius:50%;width:16px;height:16px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:900}
+.cs{background:rgba(255,255,255,.04);border:2px dashed rgba(255,255,255,.15);border-radius:10px;width:85px;height:65px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all .4s;position:relative}
+.cs.filled{border-style:solid;border-color:#FFB612;background:rgba(255,182,18,.08)}
+.cs-empty{font-size:20px;opacity:.2}
+.cs-lbl{font-size:9px;color:rgba(255,255,255,.35)}
+.cs-check{position:absolute;top:-5px;right:-5px;background:#00ee88;color:#000;border-radius:50%;width:15px;height:15px;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:900}
 
-/* ── REWARD MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:400;padding:20px}
-.modal-overlay.show{display:flex}
-.reward-card{background:linear-gradient(135deg,#111128,#0d1b2a);border-radius:22px;padding:36px 32px;max-width:420px;width:100%;text-align:center;animation:cardIn .5s cubic-bezier(.34,1.56,.64,1)}
-@keyframes cardIn{from{transform:scale(.4) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
-.reward-card.rtype-player{border:2px solid #bbb}
-.reward-card.rtype-legend{border:2px solid #FFB612;box-shadow:0 0 50px rgba(255,182,18,.4)}
-.reward-card.rtype-ultra{border:2px solid #cc44ff;box-shadow:0 0 70px rgba(204,68,255,.5)}
-.reward-card.rtype-team{border:2px solid #00cc88;box-shadow:0 0 50px rgba(0,204,136,.4)}
-.reward-card.rtype-win{border:2px solid #FFB612;box-shadow:0 0 100px rgba(255,182,18,.6)}
-.rtype-badge{font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
-.rtype-badge.player{color:#bbb}
-.rtype-badge.legend{color:#FFB612}
-.rtype-badge.ultra{color:#cc44ff}
-.rtype-badge.team{color:#00cc88}
-.rtype-badge.win{color:#FFB612}
-.reward-emoji{font-size:68px;margin:14px 0;animation:emojiFloat 2s ease-in-out infinite}
-@keyframes emojiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.reward-name{font-size:30px;font-weight:900;text-transform:uppercase;line-height:1.2;margin:10px 0}
-.reward-desc{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:6px}
-.reward-era{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:20px}
-.reward-progress{font-size:13px;color:#FFB612;margin-bottom:22px;padding:10px;background:rgba(255,182,18,.08);border-radius:8px}
-.cont-btn{background:linear-gradient(135deg,#D50A0A,#013369);border:none;border-radius:10px;color:#fff;padding:14px 36px;font-size:15px;font-family:inherit;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:2px;transition:all .2s}
-.cont-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(213,10,10,.4)}
+/* Toast */
+#toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.92);border-radius:12px;padding:16px 32px;text-align:center;z-index:500;display:none;pointer-events:none;min-width:200px}
+#toast.show{display:block}
+#toast.good{border:2px solid #00ee88;color:#00ee88}
+#toast.bad{border:2px solid #ff4444;color:#ff4444}
+.t-icon{font-size:32px;margin-bottom:5px}
+.t-msg{font-size:14px;font-weight:bold}
 
-/* ── COLLECTION SCREEN ── */
-#collectionScreen{padding:20px;overflow-y:auto;background:var(--bg)}
-.coll-back{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;padding:9px 18px;font-family:inherit;cursor:pointer;margin-bottom:20px;display:inline-flex;align-items:center;gap:8px;font-size:13px}
-.coll-title{font-size:22px;font-weight:900;color:#FFB612;text-align:center;letter-spacing:3px;margin-bottom:6px;text-transform:uppercase}
-.coll-player-tag{text-align:center;color:#888;font-size:13px;margin-bottom:24px}
-.coll-section{margin-bottom:28px}
-.coll-section-title{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#FFB612;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid rgba(255,182,18,.2)}
-.coll-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
-.coll-card{background:var(--card);border-radius:12px;padding:14px;text-align:center;font-size:12px;transition:transform .2s}
-.coll-card:hover{transform:translateY(-2px)}
-.coll-card.player{border:1px solid #aaa}
-.coll-card.legend{border:1px solid #FFB612;box-shadow:0 0 12px rgba(255,182,18,.2)}
-.coll-card.ultra{border:1px solid #cc44ff;box-shadow:0 0 16px rgba(204,68,255,.3)}
-.coll-card.team{border:1px solid #00cc88;box-shadow:0 0 12px rgba(0,204,136,.2)}
-.coll-card-emoji{font-size:30px;margin-bottom:6px}
-.coll-card-name{font-weight:bold;font-size:13px;margin-bottom:2px}
-.coll-card-sub{color:#888;font-size:10px}
-.empty-coll{color:#444;font-size:13px;text-align:center;padding:20px;font-style:italic}
-.div-progress-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.div-prog-card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px}
-.div-prog-name{font-size:11px;color:#FFB612;letter-spacing:2px;margin-bottom:8px;text-transform:uppercase}
-.div-prog-footballs{display:flex;gap:6px;flex-wrap:wrap}
-.div-prog-fb{font-size:11px;background:rgba(255,255,255,.06);border-radius:6px;padding:3px 7px;color:#aaa}
-.div-prog-fb.collected{background:rgba(255,182,18,.15);color:#FFB612;border:1px solid rgba(255,182,18,.3)}
+/* Modal */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:600;padding:20px}
+#modal.show{display:flex}
+.m-card{background:linear-gradient(135deg,#111128,#0d1b2a);border-radius:20px;padding:34px 28px;max-width:400px;width:100%;text-align:center}
+.m-card.mplayer{border:2px solid #bbb}
+.m-card.mlegend{border:2px solid #FFB612;box-shadow:0 0 40px rgba(255,182,18,.3)}
+.m-card.multra{border:2px solid #cc44ff;box-shadow:0 0 60px rgba(204,68,255,.5)}
+.m-card.mteam{border:2px solid #00cc88;box-shadow:0 0 40px rgba(0,204,136,.3)}
+.m-badge{font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.m-badge.bp{color:#bbb}.m-badge.bl{color:#FFB612}.m-badge.bu{color:#cc44ff}.m-badge.bt{color:#00cc88}
+.m-emoji{font-size:64px;margin:14px 0}
+.m-name{font-size:28px;font-weight:900;text-transform:uppercase;line-height:1.2;margin:8px 0}
+.m-desc{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:4px}
+.m-era{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:12px}
+.m-prog{font-size:12px;color:#FFB612;padding:8px 12px;background:rgba(255,182,18,.08);border-radius:7px;margin-bottom:20px}
+.m-cont{background:linear-gradient(135deg,#D50A0A,#013369);border:none;border-radius:9px;color:#fff;padding:13px 32px;font-size:14px;font-family:inherit;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:2px}
+.m-cont:hover{opacity:.9}
 
-/* ── WIN SCREEN ── */
-#winScreen{align-items:center;justify-content:center;padding:30px;text-align:center;background:radial-gradient(ellipse at center,#1a0a00 0%,#080818 70%);min-height:100vh}
-.win-title{font-size:52px;font-weight:900;background:linear-gradient(135deg,#FFB612,#D50A0A,#FFB612);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:winGlow 2s ease-in-out infinite}
-@keyframes winGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
-.win-emoji{font-size:100px;margin:20px 0;animation:winBounce 1s ease-in-out infinite}
-@keyframes winBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.1)}}
-.win-sub{font-size:20px;color:#FFB612;margin-bottom:30px}
-.win-restart{background:linear-gradient(135deg,#FFB612,#D50A0A);border:none;border-radius:12px;color:#fff;padding:16px 40px;font-size:18px;font-family:inherit;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:3px}
+/* Collection screen */
+#coll{min-height:100vh;padding:20px;background:#080818;overflow-y:auto}
+.c-back{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:7px;color:#fff;padding:8px 16px;font-family:inherit;cursor:pointer;margin-bottom:18px;font-size:13px}
+.c-title{font-size:20px;font-weight:900;color:#FFB612;text-align:center;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
+.c-sub{text-align:center;color:#666;font-size:13px;margin-bottom:22px}
+.c-sec{margin-bottom:24px}
+.c-sec-title{font-size:11px;letter-spacing:3px;color:#FFB612;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,182,18,.2)}
+.c-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:9px}
+.c-card{background:#111128;border-radius:10px;padding:12px;text-align:center;font-size:12px}
+.c-card.cp{border:1px solid #888}
+.c-card.cl{border:1px solid #FFB612}
+.c-card.cu{border:1px solid #cc44ff}
+.c-card.ct{border:1px solid #00cc88}
+.c-card-em{font-size:28px;margin-bottom:5px}
+.c-card-nm{font-weight:bold;font-size:12px;margin-bottom:2px}
+.c-card-sb{color:#777;font-size:10px}
+.c-empty{color:#444;font-size:12px;padding:14px;text-align:center;font-style:italic}
+.dp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:9px}
+.dp-card{background:#111128;border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:11px}
+.dp-div{font-size:10px;color:#FFB612;letter-spacing:2px;margin-bottom:7px;text-transform:uppercase}
+.dp-fbs{display:flex;gap:5px;flex-wrap:wrap}
+.dp-fb{font-size:10px;background:rgba(255,255,255,.05);border-radius:5px;padding:2px 6px;color:#888}
+.dp-fb.got{background:rgba(255,182,18,.15);color:#FFB612;border:1px solid rgba(255,182,18,.3)}
 
-/* ── RESPONSIVE ── */
-@media(max-width:480px){
-  .footballs-grid{grid-template-columns:1fr 1fr;gap:9px}
-  .q-text{font-size:16px}
-  .reward-name{font-size:24px}
-  .case-slots{gap:7px}
-  .case-slot{width:74px;height:58px}
-}
-
-/* Stars */
-#stars{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
-.star{position:absolute;background:#fff;border-radius:50%;opacity:0;animation:twinkle var(--d) var(--delay) ease-in-out infinite}
-@keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--op)}}
+/* Win */
+#win{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;background:radial-gradient(ellipse at center,#1a0a00,#080818)}
+.win-em{font-size:90px;margin-bottom:20px}
+.win-tit{font-size:48px;font-weight:900;background:linear-gradient(135deg,#FFB612,#D50A0A,#FFB612);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.win-sub{font-size:18px;color:#FFB612;margin:14px 0 28px}
+.win-btn{background:linear-gradient(135deg,#FFB612,#D50A0A);border:none;border-radius:10px;color:#fff;padding:15px 36px;font-size:16px;font-family:inherit;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:2px}
 </style>
 </head>
 <body>
 
-<div id="stars"></div>
-
-<!-- ══════════════════════════════════════════════
-     WELCOME SCREEN
-═══════════════════════════════════════════════ -->
-<div id="welcomeScreen" class="screen active">
-  <div class="nfl-header">
-    <div class="nfl-shield">🏈</div>
-    <div class="nfl-brand">NFL TRIVIA</div>
-    <div class="nfl-sub">Challenge</div>
+<!-- WELCOME -->
+<div id="welcome">
+  <div class="logo-area">
+    <div class="logo-football">🏈</div>
+    <div class="logo-title">NFL TRIVIA</div>
+    <div class="logo-sub">Challenge</div>
   </div>
   <div class="welcome-box">
     <h2>Enter Your Name</h2>
-    <input type="text" id="playerNameInput" class="name-input" placeholder="Your name..." maxlength="20" />
-    <button class="start-btn" onclick="startGame()">⚡ KICK OFF ⚡</button>
-    <div class="qr-section">
-      <div class="qr-label">Scan to play on your phone</div>
+    <input type="text" id="nameInput" placeholder="Your name..." maxlength="20" />
+    <button id="kickoffBtn" onclick="startGame()">⚡ KICK OFF ⚡</button>
+    <div class="qr-wrap">
+      <div class="qr-label">Scan to play on phone</div>
       <div id="qrcode"></div>
-      <div class="qr-url">https://wrcarpenter2018.github.io/nfl</div>
+      <div class="qr-url-txt">wrcarpenter2018.github.io/nfl</div>
     </div>
-    <div class="how-to-play">
+    <div class="how-to">
       <b>HOW TO PLAY:</b><br>
-      • Pick the correct football to answer each question<br>
-      • Collect all <b>4 team footballs</b> in a division → earn a <b>Player</b><br>
-      • Collect <b>5 Players</b> → earn a <b>Legend</b><br>
-      • Collect <b>5 Legends</b> → earn a <b>Team Card</b><br>
-      • Collect <b>10 Legends</b> → earn an <b>Ultra Legend</b><br>
-      • Collect <b>5 Ultra Legends</b> → <b>WIN!</b><br>
-      • Collect <b>all 32 Teams</b> → <b>ULTIMATE WIN!</b>
+      Pick the correct team football to answer each question<br>
+      Collect <b>4 division footballs</b> = earn a <b>Player</b><br>
+      <b>5 Players</b> = <b>Legend</b> &nbsp;|&nbsp; <b>10 Legends</b> = <b>Ultra Legend</b><br>
+      <b>5 Legends</b> = <b>Team Card</b> &nbsp;|&nbsp; <b>5 Ultra Legends</b> = <b>WIN!</b>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     GAME SCREEN
-═══════════════════════════════════════════════ -->
-<div id="gameScreen" class="screen">
-  <div class="game-header">
-    <div class="header-left">
-      <div class="header-logo">🏈 NFL</div>
-      <div class="player-name-tag" id="headerPlayerName">Player</div>
+<!-- GAME -->
+<div id="game" class="hidden">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="hdr-logo">🏈 NFL</div>
+      <div class="hdr-name" id="hdrName">Player</div>
     </div>
-    <div class="header-stats">
-      <div class="stat"><div class="stat-val" id="statPlayers">0</div><div class="stat-lbl">Players</div></div>
-      <div class="stat"><div class="stat-val" id="statLegends">0</div><div class="stat-lbl">Legends</div></div>
-      <div class="stat"><div class="stat-val" id="statUltra">0</div><div class="stat-lbl">Ultra</div></div>
-      <div class="stat"><div class="stat-val" id="statTeams">0</div><div class="stat-lbl">Teams</div></div>
+    <div class="hdr-stats">
+      <div class="hdr-stat"><div class="hdr-stat-v" id="sPlayers">0</div><div class="hdr-stat-l">Players</div></div>
+      <div class="hdr-stat"><div class="hdr-stat-v" id="sLegends">0</div><div class="hdr-stat-l">Legends</div></div>
+      <div class="hdr-stat"><div class="hdr-stat-v" id="sUltra">0</div><div class="hdr-stat-l">Ultra</div></div>
+      <div class="hdr-stat"><div class="hdr-stat-v" id="sTeams">0</div><div class="hdr-stat-l">Teams</div></div>
     </div>
-    <button class="coll-btn" onclick="showCollection()">📋 Collection</button>
+    <button class="coll-btn-hdr" onclick="showColl()">Collection</button>
   </div>
 
-  <div class="progress-strip">
-    <div class="prog-item">
-      <span style="font-size:11px;color:#aaa">Players</span>
-      <div class="prog-bar"><div class="prog-fill pf-player" id="progPlayer" style="width:0%"></div></div>
-      <span style="font-size:10px;color:#888" id="progPlayerTxt">0/5</span>
-    </div>
-    <div class="prog-item">
-      <span style="font-size:11px;color:#FFB612">Legends</span>
-      <div class="prog-bar"><div class="prog-fill pf-legend" id="progLegend" style="width:0%"></div></div>
-      <span style="font-size:10px;color:#888" id="progLegendTxt">0/5</span>
-    </div>
-    <div class="prog-item">
-      <span style="font-size:11px;color:#cc44ff">Ultra</span>
-      <div class="prog-bar"><div class="prog-fill pf-ultra" id="progUltra" style="width:0%"></div></div>
-      <span style="font-size:10px;color:#888" id="progUltraTxt">0/5</span>
-    </div>
-    <div class="prog-item">
-      <span style="font-size:11px;color:#00cc88">Teams</span>
-      <div class="prog-bar"><div class="prog-fill pf-team" id="progTeam" style="width:0%"></div></div>
-      <span style="font-size:10px;color:#888" id="progTeamTxt">0/32</span>
-    </div>
+  <div class="prog-strip">
+    <div class="prog-it"><span style="color:#aaa">Players</span><div class="prog-bar"><div class="prog-fill pf-p" id="ppPlayer" style="width:0%"></div></div><span id="ppPlayerTxt" style="color:#666;font-size:10px">0/5</span></div>
+    <div class="prog-it"><span style="color:#FFB612">Legends</span><div class="prog-bar"><div class="prog-fill pf-l" id="ppLegend" style="width:0%"></div></div><span id="ppLegendTxt" style="color:#666;font-size:10px">0/10</span></div>
+    <div class="prog-it"><span style="color:#cc44ff">Ultra</span><div class="prog-bar"><div class="prog-fill pf-u" id="ppUltra" style="width:0%"></div></div><span id="ppUltraTxt" style="color:#666;font-size:10px">0/5</span></div>
+    <div class="prog-it"><span style="color:#00cc88">Teams</span><div class="prog-bar"><div class="prog-fill pf-t" id="ppTeam" style="width:0%"></div></div><span id="ppTeamTxt" style="color:#666;font-size:10px">0/32</span></div>
   </div>
 
   <div class="div-tabs" id="divTabs"></div>
 
-  <div class="question-area">
-    <div class="q-division-badge" id="qDivisionBadge">AFC EAST</div>
+  <div class="q-area">
+    <div class="q-badge" id="qBadge">AFC EAST</div>
     <div class="q-card">
       <div class="q-num" id="qNum">QUESTION 1</div>
-      <div class="q-text" id="qText">Loading...</div>
+      <div class="q-text" id="qText">Loading question...</div>
     </div>
-    <div class="footballs-grid" id="footballsGrid"></div>
+    <div class="fb-grid" id="fbGrid"></div>
   </div>
 
-  <!-- Division Case -->
   <div class="div-case">
-    <div class="case-title" id="caseDivisionName">AFC EAST DIVISION CASE</div>
+    <div class="case-title" id="caseTitle">AFC EAST DIVISION CASE</div>
     <div class="case-slots" id="caseSlots"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     COLLECTION SCREEN
-═══════════════════════════════════════════════ -->
-<div id="collectionScreen" class="screen">
-  <button class="coll-back" onclick="showGame()">← Back to Game</button>
-  <div class="coll-title">MY COLLECTION</div>
-  <div class="coll-player-tag" id="collPlayerTag"></div>
-
-  <div class="coll-section">
-    <div class="coll-section-title">Division Progress</div>
-    <div class="div-progress-grid" id="divProgressGrid"></div>
-  </div>
-
-  <div class="coll-section">
-    <div class="coll-section-title">🏈 Players Earned</div>
-    <div class="coll-cards-grid" id="collPlayers"></div>
-  </div>
-
-  <div class="coll-section">
-    <div class="coll-section-title">🌟 Legends</div>
-    <div class="coll-cards-grid" id="collLegends"></div>
-  </div>
-
-  <div class="coll-section">
-    <div class="coll-section-title">💎 Ultra Legends</div>
-    <div class="coll-cards-grid" id="collUltra"></div>
-  </div>
-
-  <div class="coll-section">
-    <div class="coll-section-title">🏆 Team Cards</div>
-    <div class="coll-cards-grid" id="collTeams"></div>
-  </div>
+<!-- COLLECTION -->
+<div id="coll" class="hidden">
+  <button class="c-back" onclick="showGame()">&#8592; Back to Game</button>
+  <div class="c-title">MY COLLECTION</div>
+  <div class="c-sub" id="collSub"></div>
+  <div class="c-sec"><div class="c-sec-title">Division Progress</div><div class="dp-grid" id="dpGrid"></div></div>
+  <div class="c-sec"><div class="c-sec-title">&#127944; Players Earned</div><div class="c-grid" id="cPlayers"></div></div>
+  <div class="c-sec"><div class="c-sec-title">&#127775; Legends</div><div class="c-grid" id="cLegends"></div></div>
+  <div class="c-sec"><div class="c-sec-title">&#128142; Ultra Legends</div><div class="c-grid" id="cUltra"></div></div>
+  <div class="c-sec"><div class="c-sec-title">&#127942; Team Cards</div><div class="c-grid" id="cTeams"></div></div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     WIN SCREEN
-═══════════════════════════════════════════════ -->
-<div id="winScreen" class="screen">
-  <div class="win-emoji" id="winEmoji">🏆</div>
-  <div class="win-title" id="winTitle">YOU WIN!</div>
-  <div class="win-sub" id="winSub">Incredible champion!</div>
-  <button class="win-restart" onclick="restartGame()">🔄 PLAY AGAIN</button>
+<!-- WIN -->
+<div id="win" class="hidden">
+  <div class="win-em" id="winEm">&#127942;</div>
+  <div class="win-tit" id="winTit">YOU WIN!</div>
+  <div class="win-sub" id="winSub">Incredible!</div>
+  <button class="win-btn" onclick="restartGame()">&#128260; PLAY AGAIN</button>
 </div>
 
-<!-- Feedback Toast -->
-<div id="feedbackToast">
-  <div class="toast-icon" id="toastIcon"></div>
-  <div class="toast-msg" id="toastMsg"></div>
+<!-- TOAST -->
+<div id="toast">
+  <div class="t-icon" id="toastIcon"></div>
+  <div class="t-msg" id="toastMsg"></div>
 </div>
 
-<!-- Reward Modal -->
-<div class="modal-overlay" id="rewardModal">
-  <div class="reward-card" id="rewardCard">
-    <div class="rtype-badge" id="rewardTypeBadge">PLAYER EARNED</div>
-    <div class="reward-emoji" id="rewardEmoji">🏈</div>
-    <div class="reward-name" id="rewardName">Player Name</div>
-    <div class="reward-desc" id="rewardDesc">Position • Team</div>
-    <div class="reward-era" id="rewardEra">Active</div>
-    <div class="reward-progress" id="rewardProgress"></div>
-    <button class="cont-btn" onclick="closeReward()">CONTINUE</button>
+<!-- MODAL -->
+<div id="modal">
+  <div class="m-card" id="mCard">
+    <div class="m-badge" id="mBadge">PLAYER EARNED!</div>
+    <div class="m-emoji" id="mEmoji">&#127944;</div>
+    <div class="m-name" id="mName">Name</div>
+    <div class="m-desc" id="mDesc">Desc</div>
+    <div class="m-era" id="mEra">Era</div>
+    <div class="m-prog" id="mProg">Progress</div>
+    <button class="m-cont" onclick="closeModal()">CONTINUE</button>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════
-// NFL DATA
-// ════════════════════════════════════════
-const TEAM_INFO = {
-  'Bills':      {primary:'#00338D',secondary:'#C60C30',abbr:'BUF',city:'Buffalo'},
-  'Dolphins':   {primary:'#008E97',secondary:'#FC4C02',abbr:'MIA',city:'Miami'},
-  'Patriots':   {primary:'#002244',secondary:'#C60C30',abbr:'NE', city:'New England'},
-  'Jets':       {primary:'#125740',secondary:'#FFFFFF',abbr:'NYJ',city:'New York'},
-  'Ravens':     {primary:'#241773',secondary:'#9E7C0C',abbr:'BAL',city:'Baltimore'},
-  'Bengals':    {primary:'#FB4F14',secondary:'#000000',abbr:'CIN',city:'Cincinnati'},
-  'Browns':     {primary:'#311D00',secondary:'#FF3C00',abbr:'CLE',city:'Cleveland'},
-  'Steelers':   {primary:'#101820',secondary:'#FFB612',abbr:'PIT',city:'Pittsburgh'},
-  'Texans':     {primary:'#03202F',secondary:'#A71930',abbr:'HOU',city:'Houston'},
-  'Colts':      {primary:'#002C5F',secondary:'#A2AAAD',abbr:'IND',city:'Indianapolis'},
-  'Jaguars':    {primary:'#006778',secondary:'#9F792C',abbr:'JAX',city:'Jacksonville'},
-  'Titans':     {primary:'#4B92DB',secondary:'#C8102E',abbr:'TEN',city:'Tennessee'},
-  'Broncos':    {primary:'#FB4F14',secondary:'#002244',abbr:'DEN',city:'Denver'},
-  'Chiefs':     {primary:'#E31837',secondary:'#FFB81C',abbr:'KC', city:'Kansas City'},
-  'Raiders':    {primary:'#000000',secondary:'#A5ACAF',abbr:'LV', city:'Las Vegas'},
-  'Chargers':   {primary:'#0080C6',secondary:'#FFC20E',abbr:'LAC',city:'LA Chargers'},
-  'Cowboys':    {primary:'#003594',secondary:'#869397',abbr:'DAL',city:'Dallas'},
-  'Giants':     {primary:'#0B2265',secondary:'#A71930',abbr:'NYG',city:'NY Giants'},
-  'Eagles':     {primary:'#004C54',secondary:'#A5ACAF',abbr:'PHI',city:'Philadelphia'},
-  'Commanders': {primary:'#5A1414',secondary:'#FFB612',abbr:'WSH',city:'Washington'},
-  'Bears':      {primary:'#0B162A',secondary:'#C83803',abbr:'CHI',city:'Chicago'},
-  'Lions':      {primary:'#0076B6',secondary:'#B0B7BC',abbr:'DET',city:'Detroit'},
-  'Packers':    {primary:'#203731',secondary:'#FFB612',abbr:'GB', city:'Green Bay'},
-  'Vikings':    {primary:'#4F2683',secondary:'#FFC62F',abbr:'MIN',city:'Minnesota'},
-  'Falcons':    {primary:'#A71930',secondary:'#000000',abbr:'ATL',city:'Atlanta'},
-  'Panthers':   {primary:'#0085CA',secondary:'#101820',abbr:'CAR',city:'Carolina'},
-  'Saints':     {primary:'#D3BC8D',secondary:'#101820',abbr:'NO', city:'New Orleans'},
-  'Buccaneers': {primary:'#D50A0A',secondary:'#34302B',abbr:'TB', city:'Tampa Bay'},
-  'Cardinals':  {primary:'#97233F',secondary:'#000000',abbr:'ARI',city:'Arizona'},
-  'Rams':       {primary:'#003594',secondary:'#FFA300',abbr:'LAR',city:'LA Rams'},
-  '49ers':      {primary:'#AA0000',secondary:'#B3995D',abbr:'SF', city:'San Francisco'},
-  'Seahawks':   {primary:'#002244',secondary:'#69BE28',abbr:'SEA',city:'Seattle'},
+// ==================== NFL DATA ====================
+
+var TEAMS = {
+  Bills:      {p:'#00338D',s:'#C60C30',a:'BUF',c:'Buffalo'},
+  Dolphins:   {p:'#008E97',s:'#FC4C02',a:'MIA',c:'Miami'},
+  Patriots:   {p:'#002244',s:'#C60C30',a:'NE', c:'New England'},
+  Jets:       {p:'#125740',s:'#FFFFFF',a:'NYJ',c:'New York Jets'},
+  Ravens:     {p:'#241773',s:'#9E7C0C',a:'BAL',c:'Baltimore'},
+  Bengals:    {p:'#FB4F14',s:'#000000',a:'CIN',c:'Cincinnati'},
+  Browns:     {p:'#311D00',s:'#FF3C00',a:'CLE',c:'Cleveland'},
+  Steelers:   {p:'#101820',s:'#FFB612',a:'PIT',c:'Pittsburgh'},
+  Texans:     {p:'#03202F',s:'#A71930',a:'HOU',c:'Houston'},
+  Colts:      {p:'#002C5F',s:'#A2AAAD',a:'IND',c:'Indianapolis'},
+  Jaguars:    {p:'#006778',s:'#9F792C',a:'JAX',c:'Jacksonville'},
+  Titans:     {p:'#4B92DB',s:'#C8102E',a:'TEN',c:'Tennessee'},
+  Broncos:    {p:'#FB4F14',s:'#002244',a:'DEN',c:'Denver'},
+  Chiefs:     {p:'#E31837',s:'#FFB81C',a:'KC', c:'Kansas City'},
+  Raiders:    {p:'#2B2B2B',s:'#A5ACAF',a:'LV', c:'Las Vegas'},
+  Chargers:   {p:'#0080C6',s:'#FFC20E',a:'LAC',c:'LA Chargers'},
+  Cowboys:    {p:'#003594',s:'#869397',a:'DAL',c:'Dallas'},
+  Giants:     {p:'#0B2265',s:'#A71930',a:'NYG',c:'NY Giants'},
+  Eagles:     {p:'#004C54',s:'#A5ACAF',a:'PHI',c:'Philadelphia'},
+  Commanders: {p:'#5A1414',s:'#FFB612',a:'WSH',c:'Washington'},
+  Bears:      {p:'#0B162A',s:'#C83803',a:'CHI',c:'Chicago'},
+  Lions:      {p:'#0076B6',s:'#B0B7BC',a:'DET',c:'Detroit'},
+  Packers:    {p:'#203731',s:'#FFB612',a:'GB', c:'Green Bay'},
+  Vikings:    {p:'#4F2683',s:'#FFC62F',a:'MIN',c:'Minnesota'},
+  Falcons:    {p:'#A71930',s:'#000000',a:'ATL',c:'Atlanta'},
+  Panthers:   {p:'#0085CA',s:'#101820',a:'CAR',c:'Carolina'},
+  Saints:     {p:'#8B7536',s:'#101820',a:'NO', c:'New Orleans'},
+  Buccaneers: {p:'#D50A0A',s:'#34302B',a:'TB', c:'Tampa Bay'},
+  Cardinals:  {p:'#97233F',s:'#FFB612',a:'ARI',c:'Arizona'},
+  Rams:       {p:'#003594',s:'#FFA300',a:'LAR',c:'LA Rams'},
+  Niners:     {p:'#AA0000',s:'#B3995D',a:'SF', c:'San Francisco'},
+  Seahawks:   {p:'#002244',s:'#69BE28',a:'SEA',c:'Seattle'}
 };
 
-const DIVISIONS = {
+var DIVS = {
   'AFC East':  ['Bills','Dolphins','Patriots','Jets'],
   'AFC North': ['Ravens','Bengals','Browns','Steelers'],
   'AFC South': ['Texans','Colts','Jaguars','Titans'],
@@ -375,898 +307,696 @@ const DIVISIONS = {
   'NFC East':  ['Cowboys','Giants','Eagles','Commanders'],
   'NFC North': ['Bears','Lions','Packers','Vikings'],
   'NFC South': ['Falcons','Panthers','Saints','Buccaneers'],
-  'NFC West':  ['Cardinals','Rams','49ers','Seahawks'],
+  'NFC West':  ['Cardinals','Rams','Niners','Seahawks']
 };
 
-// Questions: correct answer is the team key; wrong answers are other teams in same division
-const TRIVIA = {
-  'Bills': [
-    "Which AFC East team plays their home games at Highmark Stadium?",
-    "Josh Allen is the franchise quarterback for which team?",
-    "Which team made 4 consecutive Super Bowl appearances (XXVII–XXX) without winning?",
-    "Which team is based in Orchard Park, New York?",
-    "Stefon Diggs starred at wide receiver for which team?",
+var TRIVIA = {
+  Bills: [
+    "Which team plays at Highmark Stadium in Orchard Park, New York?",
+    "Josh Allen is the star quarterback for which AFC East team?",
+    "Which team lost 4 consecutive Super Bowls in the early 1990s?",
+    "Stefon Diggs played wide receiver for which team before 2024?"
   ],
-  'Dolphins': [
-    "Which team completed the NFL's only perfect undefeated season in 1972?",
-    "Dan Marino, who never won a Super Bowl, played his entire career for which team?",
-    "Which team plays at Hard Rock Stadium in Miami?",
-    "Tyreek Hill switched to which team as a free agent in 2022?",
-    "Which team's mascot is a leaping aqua-colored marine mammal?",
+  Dolphins: [
+    "Which team had the only perfect undefeated season in NFL history in 1972?",
+    "Dan Marino played his entire career for which team?",
+    "Which team plays at Hard Rock Stadium in Miami Gardens?",
+    "Tyreek Hill signed with which team as a free agent in 2022?"
   ],
-  'Patriots': [
-    "Tom Brady won 6 of his 7 Super Bowls with which team?",
+  Patriots: [
+    "Tom Brady won 6 of his 7 Super Bowl rings with which team?",
     "Which team plays at Gillette Stadium in Foxborough, Massachusetts?",
-    "Bill Belichick coached which team to 6 Super Bowl championships?",
-    "Which AFC East franchise won the most Super Bowls of the 2000s?",
-    "Which team is known for the 'Do Your Job' team motto?",
+    "Bill Belichick coached which team to 6 Super Bowl wins?",
+    "Which AFC East team is known for its dynasty in the 2000s and 2010s?"
   ],
-  'Jets': [
-    "Joe Namath guaranteed a Super Bowl victory for which team in Super Bowl III?",
-    "Which team plays at MetLife Stadium and wears green?",
-    "Aaron Rodgers joined which team as a quarterback in 2023?",
-    "Which team is known by the nickname 'Gang Green'?",
-    "Which team has gone the longest in the AFC East without a Super Bowl win?",
+  Jets: [
+    "Joe Namath guaranteed a Super Bowl win for which team in Super Bowl III?",
+    "Aaron Rodgers joined which team as quarterback in the 2023 season?",
+    "Which New York-area team is known as Gang Green and plays in green?",
+    "Which team plays its home games at MetLife Stadium in East Rutherford?"
   ],
-  'Ravens': [
-    "Lamar Jackson is the dual-threat quarterback for which team?",
-    "Ed Reed, often called the greatest safety in NFL history, played for which team?",
-    "Which team won Super Bowl XLVII led by Ray Lewis in his final season?",
-    "Which team plays at M&T Bank Stadium in Baltimore?",
-    "The legendary linebacker Ray Lewis played his entire career for which team?",
+  Ravens: [
+    "Lamar Jackson is the MVP quarterback for which team?",
+    "Ray Lewis played his legendary linebacker career for which team?",
+    "Which team plays at M and T Bank Stadium in Baltimore?",
+    "Ed Reed, often called the greatest safety ever, played for which team?"
   ],
-  'Bengals': [
+  Bengals: [
     "Joe Burrow led which team to Super Bowl LVI?",
-    "Ja'Marr Chase, one of the best young receivers in the NFL, plays for which team?",
-    "Which team plays at Paycor Stadium in Cincinnati?",
-    "Which team's battle cry is 'Who Dey!'?",
-    "Tee Higgins is a star wide receiver for which team?",
+    "Ja Marr Chase plays wide receiver for which team?",
+    "Which team plays at Paycor Stadium and has the battle cry Who Dey?",
+    "Tee Higgins is a star wide receiver for which NFL team?"
   ],
-  'Browns': [
-    "Jim Brown, often called the greatest running back of all time, played for which team?",
-    "Which team plays at Huntington Bank Field in Cleveland?",
-    "Nick Chubb was one of the elite running backs for which franchise?",
-    "Which team's fans famously wear 'Dawg Pound' gear in the end zone?",
-    "Which team has not won a Super Bowl and is based in Ohio?",
+  Browns: [
+    "Jim Brown, often called the greatest running back ever, played for which team?",
+    "Which team plays at Huntington Bank Field in Cleveland, Ohio?",
+    "Nick Chubb was one of the top running backs for which franchise?",
+    "Which team's fans are known for cheering in the famous Dawg Pound section?"
   ],
-  'Steelers': [
-    "T.J. Watt won NFL Defensive Player of the Year for which team?",
-    "Which team plays at Acrisure Stadium in Pittsburgh?",
-    "Which team's fans wave the famous 'Terrible Towel' at games?",
-    "Which team won 6 Super Bowls, tied with the Patriots for the most?",
-    "The 'Steel Curtain' defense is associated with which NFL franchise?",
+  Steelers: [
+    "T.J. Watt won NFL Defensive Player of the Year playing for which team?",
+    "Which team plays at Acrisure Stadium in Pittsburgh and has 6 Super Bowl wins?",
+    "The Terrible Towel tradition is associated with fans of which team?",
+    "Which team's dominant Steel Curtain defense won four Super Bowls in the 1970s?"
   ],
-  'Texans': [
-    "C.J. Stroud emerged as a star quarterback for which team?",
-    "J.J. Watt won three Defensive Player of the Year awards with which team?",
-    "Which team plays at NRG Stadium in Houston?",
-    "Which team was founded in 2002 making it one of the NFL's newest franchises?",
-    "Nico Collins is a breakout wide receiver for which team?",
+  Texans: [
+    "C.J. Stroud had a breakout rookie season as quarterback for which team?",
+    "J.J. Watt won three NFL Defensive Player of the Year awards for which team?",
+    "Which team plays at NRG Stadium in Houston, Texas?",
+    "Which AFC South team was established in 2002 making it one of the newest franchises?"
   ],
-  'Colts': [
-    "Peyton Manning played 14 seasons and won one Super Bowl with which team?",
+  Colts: [
+    "Peyton Manning played 14 seasons and is most associated with which team?",
     "Which team plays at Lucas Oil Stadium in Indianapolis?",
-    "The horseshoe logo belongs to which NFL team?",
-    "Jonathan Taylor won the NFL rushing title playing for which team?",
-    "Which AFC South team was originally based in Baltimore?",
+    "The blue horseshoe logo represents which NFL team?",
+    "Jonathan Taylor won the NFL rushing title playing for which team?"
   ],
-  'Jaguars': [
+  Jaguars: [
     "Trevor Lawrence is the franchise quarterback for which team?",
     "Which team plays at EverBank Stadium in Jacksonville, Florida?",
-    "Calvin Ridley joined which team as a wide receiver?",
-    "Which team won the AFC South in 2022 under coach Doug Pederson?",
-    "Josh Allen (the linebacker) plays for which AFC South team?",
+    "Which AFC South team made the playoffs in 2022 under coach Doug Pederson?",
+    "Josh Allen the pass rusher plays for which AFC South franchise?"
   ],
-  'Titans': [
+  Titans: [
     "Which team plays at Nissan Stadium in Nashville, Tennessee?",
     "Derrick Henry set rushing records before leaving which team?",
-    "Will Levis is the young quarterback for which team?",
-    "Which franchise moved from Houston to Tennessee in 1997?",
-    "Which team's mascot is a Norse warrior called 'T-Rac'?",
+    "Will Levis became the starting quarterback for which team?",
+    "Which franchise relocated from Houston to Tennessee in 1997?"
   ],
-  'Broncos': [
-    "John Elway won back-to-back Super Bowls as QB and later as GM for which team?",
-    "Which team plays at Empower Field at Mile High in Denver?",
-    "Bo Nix was drafted to be the quarterback of which team?",
-    "Which team won Super Bowl 50 with Peyton Manning?",
-    "The 'Mile High Salute' celebration originated with which team?",
+  Broncos: [
+    "John Elway won back to back Super Bowls as quarterback for which team?",
+    "Which team plays at Empower Field at Mile High in Denver, Colorado?",
+    "Bo Nix was drafted to be the starting quarterback for which team?",
+    "Which team won Super Bowl 50 with Peyton Manning at quarterback?"
   ],
-  'Chiefs': [
+  Chiefs: [
     "Patrick Mahomes has won multiple Super Bowls as quarterback for which team?",
     "Which team plays at Arrowhead Stadium in Kansas City?",
     "Travis Kelce, considered the greatest tight end ever, plays for which team?",
-    "Which team won back-to-back Super Bowls in 2023 and 2024 (LVII and LVIII)?",
-    "Coach Andy Reid has led which team to multiple championships?",
+    "Which team won back to back Super Bowls in 2023 and 2024?"
   ],
-  'Raiders': [
-    "Which team relocated from Oakland to Las Vegas in 2020?",
-    "Which team plays at Allegiant Stadium in Las Vegas?",
-    "Maxx Crosby is the elite pass rusher for which team?",
-    "Which team wears silver and black as their signature colors?",
-    "Which team was previously known as the Oakland Raiders?",
+  Raiders: [
+    "Which team relocated from Oakland to Las Vegas and opened Allegiant Stadium in 2020?",
+    "Maxx Crosby is an elite pass rusher for which team?",
+    "Which NFL team wears silver and black as its signature colors?",
+    "Davante Adams played for which team after leaving the Packers?"
   ],
-  'Chargers': [
+  Chargers: [
     "Justin Herbert is the talented young quarterback for which team?",
-    "Which team plays at SoFi Stadium but is NOT the Rams?",
-    "Keenan Allen spent most of his career as a receiver for which team?",
-    "Which team shares their stadium in Inglewood with another NFL franchise?",
-    "Jim Harbaugh left Michigan to coach which NFL team?",
+    "Which team plays at SoFi Stadium but is not the Rams?",
+    "Keenan Allen spent most of his career as a wide receiver for which team?",
+    "Jim Harbaugh left his coaching job at Michigan to coach which NFL team?"
   ],
-  'Cowboys': [
-    "Which team is nicknamed 'America's Team'?",
+  Cowboys: [
+    "Which team is nicknamed America's Team and plays in Dallas?",
     "Dak Prescott is the starting quarterback for which team?",
     "Which team plays at AT&T Stadium in Arlington, Texas?",
-    "CeeDee Lamb is one of the NFL's best wide receivers for which team?",
-    "Which team has 5 Super Bowl wins and wears blue and silver?",
+    "CeeDee Lamb is considered one of the best wide receivers for which team?"
   ],
-  'Giants': [
-    "Lawrence Taylor, called the greatest defensive player ever, played for which team?",
-    "Which team plays at MetLife Stadium and wears blue and red?",
-    "Eli Manning won two Super Bowls — both beating the Patriots — for which team?",
-    "Saquon Barkley starred as a running back for which team before leaving?",
-    "Which team won Super Bowl XLII as a massive underdog against New England?",
+  Giants: [
+    "Lawrence Taylor, called the greatest defensive player in history, played for which team?",
+    "Eli Manning won two Super Bowls over the Patriots playing for which team?",
+    "Which team plays at MetLife Stadium and wears blue and red colors?",
+    "Saquon Barkley starred as a running back for which team before moving to Philadelphia?"
   ],
-  'Eagles': [
-    "Jalen Hurts is the dual-threat quarterback for which team?",
+  Eagles: [
+    "Jalen Hurts is the dual threat quarterback for which team?",
+    "Which team won Super Bowl LII, upsetting the heavily favored New England Patriots?",
     "Which team plays at Lincoln Financial Field in Philadelphia?",
-    "Which team upset the Patriots in Super Bowl LII to win their first championship?",
-    "A.J. Brown joined which team as a star wide receiver in 2022?",
-    "Which team's fans are known for being the toughest and loudest in the NFC?",
+    "A.J. Brown plays wide receiver for which NFC East franchise?"
   ],
-  'Commanders': [
-    "Jayden Daniels won NFL Offensive Rookie of the Year for which team?",
-    "Which team plays at Northwest Stadium in the Washington DC area?",
-    "Which team was previously known as the Redskins and then the Football Team?",
-    "Terry McLaurin is the star wide receiver for which Washington-area franchise?",
-    "Which team changed its name to the Commanders in 2022?",
+  Commanders: [
+    "Jayden Daniels won NFL Offensive Rookie of the Year playing for which team?",
+    "Which team plays at Northwest Stadium in the Washington D.C. area?",
+    "Which team was formerly known as the Redskins and then the Football Team?",
+    "Terry McLaurin is the star wide receiver for which NFC East team?"
   ],
-  'Bears': [
-    "Caleb Williams was selected #1 overall in the 2024 NFL Draft by which team?",
-    "Walter Payton, the legendary 'Sweetness,' played his entire career for which team?",
-    "Which team plays at Soldier Field in Chicago?",
-    "Which NFL team is considered one of the founding franchises established in 1919?",
-    "D.J. Moore is the wide receiver paired with Caleb Williams for which team?",
+  Bears: [
+    "Caleb Williams was selected number one overall in the 2024 NFL Draft by which team?",
+    "Walter Payton, nicknamed Sweetness, played his legendary career for which team?",
+    "Which team plays at Soldier Field in Chicago, Illinois?",
+    "Which team is considered one of the founding NFL franchises dating back to 1919?"
   ],
-  'Lions': [
-    "Jared Goff is the quarterback for a resurgent team — which one?",
-    "Barry Sanders, considered the most elusive runner in history, played for which team?",
-    "Which team plays at Ford Field in Detroit?",
-    "Amon-Ra St. Brown is the reliable slot receiver for which team?",
-    "Which team reached the NFC Championship Game for the first time in decades in 2023?",
+  Lions: [
+    "Jared Goff has led which team to their best seasons in recent history?",
+    "Barry Sanders, famous for his elusive running style, played for which team?",
+    "Which team plays at Ford Field in Detroit, Michigan?",
+    "Amon Ra St. Brown is the reliable slot wide receiver for which team?"
   ],
-  'Packers': [
-    "Jordan Love took over as quarterback for which team after Aaron Rodgers left?",
-    "Which team plays at the iconic Lambeau Field in Green Bay?",
-    "Vince Lombardi won 5 NFL championships coaching which team?",
-    "Which team is the only community-owned non-profit franchise in the NFL?",
-    "Davante Adams was a star receiver for which team before going to Las Vegas?",
+  Packers: [
+    "Jordan Love became the starting quarterback for which team after Aaron Rodgers left?",
+    "Which team plays home games at the historic Lambeau Field in Green Bay?",
+    "Vince Lombardi won five NFL championships as the head coach of which team?",
+    "Which team is uniquely owned by the community and fans as a nonprofit organization?"
   ],
-  'Vikings': [
-    "Justin Jefferson, one of the NFL's best receivers, plays for which team?",
-    "Which team plays at U.S. Bank Stadium in Minneapolis?",
-    "Adrian Peterson set the single-season rushing record of 2,097 yards for which team?",
-    "J.J. McCarthy was drafted to be the future quarterback for which team?",
-    "Which team has never won a Super Bowl but has appeared four times?",
+  Vikings: [
+    "Justin Jefferson, widely considered the best receiver in football, plays for which team?",
+    "Which team plays at U.S. Bank Stadium in Minneapolis, Minnesota?",
+    "Adrian Peterson set the single season rushing record of 2097 yards for which team?",
+    "J.J. McCarthy was drafted by which team to be their quarterback of the future?"
   ],
-  'Falcons': [
-    "Kirk Cousins signed as a free agent quarterback with which team in 2024?",
-    "Which team plays at Mercedes-Benz Stadium in Atlanta?",
-    "Julio Jones was one of the greatest receivers to play for which team?",
-    "Bijan Robinson is one of the most exciting running backs for which NFC South team?",
-    "Which team infamously blew a 28-3 Super Bowl lead against the Patriots?",
+  Falcons: [
+    "Kirk Cousins signed with which team as their quarterback in the 2024 offseason?",
+    "Which team plays at Mercedes Benz Stadium in Atlanta, Georgia?",
+    "Julio Jones played his best seasons at wide receiver for which team?",
+    "Bijan Robinson is the exciting young running back for which NFC South team?"
   ],
-  'Panthers': [
-    "Bryce Young was selected #1 overall in the 2023 NFL Draft by which team?",
-    "Which team plays at Bank of America Stadium in Charlotte?",
-    "Steve Smith Sr. spent the majority of his Hall of Fame career with which team?",
-    "Which team represents both North and South Carolina?",
-    "Dave Canales is the head coach for which NFC South franchise?",
+  Panthers: [
+    "Bryce Young was selected first overall in the 2023 NFL Draft by which team?",
+    "Which team plays at Bank of America Stadium in Charlotte, North Carolina?",
+    "Steve Smith Sr. spent most of his Hall of Fame receiving career with which team?",
+    "Which team represents both North and South Carolina in the NFL?"
   ],
-  'Saints': [
-    "Drew Brees won Super Bowl XLIV and rebuilt which city's team after Hurricane Katrina?",
-    "Which team plays at Caesars Superdome in New Orleans?",
-    "Derek Carr signed as a free agent quarterback with which team in 2023?",
-    "Which team's fans are known as the 'Who Dat Nation'?",
-    "Michael Thomas was once the NFL's top receiver for which team?",
+  Saints: [
+    "Drew Brees won Super Bowl XLIV and rebuilt which city after Hurricane Katrina?",
+    "Which team plays at Caesars Superdome in New Orleans, Louisiana?",
+    "Derek Carr signed as a free agent to be quarterback for which team in 2023?",
+    "Which team is famous for its passionate fans known as the Who Dat Nation?"
   ],
-  'Buccaneers': [
+  Buccaneers: [
     "Tom Brady won Super Bowl LV in his first season with which team?",
-    "Which team plays at Raymond James Stadium in Tampa Bay?",
-    "Baker Mayfield won NFL Comeback Player of the Year for which team?",
-    "Mike Evans has set receiving records in a single franchise — which one?",
-    "Which team won the Super Bowl played in their home stadium in 2021?",
+    "Which team plays at Raymond James Stadium in Tampa Bay, Florida?",
+    "Baker Mayfield won NFL Comeback Player of the Year playing for which team?",
+    "Mike Evans has spent his entire wide receiver career with which franchise?"
   ],
-  'Cardinals': [
-    "Kyler Murray is the dual-threat quarterback for which team?",
+  Cardinals: [
+    "Kyler Murray is the scrambling quarterback for which team?",
     "Which team plays at State Farm Stadium in Glendale, Arizona?",
-    "DeAndre Hopkins played for which team and made the 'Hail Murray' catch famous?",
-    "Which franchise claims to be the oldest continuously operating team in the NFL?",
-    "Marvin Harrison Jr. was drafted to join Kyler Murray on which team?",
+    "DeAndre Hopkins made his famous Hail Murray catch for which team?",
+    "Which NFL franchise claims to be the oldest continuously operating team in the league?"
   ],
-  'Rams': [
-    "Matthew Stafford won Super Bowl LVI with which team?",
+  Rams: [
+    "Matthew Stafford won Super Bowl LVI as quarterback for which team?",
     "Which team plays at SoFi Stadium in Inglewood, California?",
-    "Cooper Kupp won the Triple Crown of receiving while playing for which team?",
-    "Which team relocated from St. Louis back to Los Angeles in 2016?",
-    "Puka Nacua had a record-breaking rookie receiver season for which team?",
+    "Cooper Kupp won the receiving Triple Crown while playing for which team?",
+    "Which team relocated from St. Louis back to Los Angeles in 2016?"
   ],
-  '49ers': [
-    "Brock Purdy went from last pick in the 2022 NFL Draft to leading which team to the Super Bowl?",
-    "Jerry Rice, widely considered the greatest wide receiver ever, played for which team?",
-    "Which team plays at Levi's Stadium in Santa Clara, California?",
-    "Which team lost Super Bowl LVIII to the Kansas City Chiefs in overtime?",
-    "Christian McCaffrey is the versatile star running back for which team?",
+  Niners: [
+    "Brock Purdy went from the last pick in the 2022 draft to leading which team to the Super Bowl?",
+    "Jerry Rice, widely considered the greatest receiver ever, played for which team?",
+    "Which team plays at Levi Stadium in Santa Clara, California?",
+    "Christian McCaffrey is the versatile all purpose running back for which team?"
   ],
-  'Seahawks': [
-    "Geno Smith outperformed expectations as quarterback for which team?",
+  Seahawks: [
+    "Geno Smith had a career revival and led which team to the playoffs?",
     "Russell Wilson spent the first ten seasons of his career with which team?",
-    "Which team plays at Lumen Field in Seattle?",
-    "Pete Carroll coached which team for over a decade including a Super Bowl win?",
-    "Which team won Super Bowl XLVIII with one of the most dominant defenses ever?",
-  ],
+    "Which team plays at Lumen Field in Seattle, Washington?",
+    "Pete Carroll coached which team for over a decade including a Super Bowl win in 2014?"
+  ]
 };
 
-// ════════════════════════════════════════
-// PLAYERS PER DIVISION (awarded on completion)
-// ════════════════════════════════════════
-const DIVISION_PLAYER_POOLS = {
-  'AFC East': [
-    {name:'Josh Allen',pos:'QB',team:'Bills',emoji:'🏈',desc:'3x Pro Bowl QB'},
-    {name:'Tua Tagovailoa',pos:'QB',team:'Dolphins',emoji:'🏈',desc:'Pro Bowl QB'},
-    {name:'Drake Maye',pos:'QB',team:'Patriots',emoji:'🏈',desc:'2024 #3 Overall Pick'},
-    {name:'Sauce Gardner',pos:'CB',team:'Jets',emoji:'🛡️',desc:'Defensive ROY 2022'},
-  ],
-  'AFC North': [
-    {name:'Lamar Jackson',pos:'QB',team:'Ravens',emoji:'⚡',desc:'2x NFL MVP'},
-    {name:'Joe Burrow',pos:'QB',team:'Bengals',emoji:'🏈',desc:'Super Bowl LVI QB'},
-    {name:'Nick Chubb',pos:'RB',team:'Browns',emoji:'💪',desc:'Elite Rusher'},
-    {name:'T.J. Watt',pos:'LB',team:'Steelers',emoji:'🔥',desc:'DPOY 2021'},
-  ],
-  'AFC South': [
-    {name:'C.J. Stroud',pos:'QB',team:'Texans',emoji:'🚀',desc:'2023 Offensive ROY'},
-    {name:'Anthony Richardson',pos:'QB',team:'Colts',emoji:'💨',desc:'Athletic Phenom QB'},
-    {name:'Trevor Lawrence',pos:'QB',team:'Jaguars',emoji:'🦁',desc:'#1 Overall Pick 2021'},
-    {name:'Derrick Henry',pos:'RB',team:'Titans',emoji:'🐴',desc:'2x NFL Rushing Champion'},
-  ],
-  'AFC West': [
-    {name:'Patrick Mahomes',pos:'QB',team:'Chiefs',emoji:'👑',desc:'3x Super Bowl MVP'},
-    {name:'Justin Herbert',pos:'QB',team:'Chargers',emoji:'🌊',desc:'2020 Offensive ROY'},
-    {name:'Bo Nix',pos:'QB',team:'Broncos',emoji:'🐴',desc:'2024 NFL Draft Star'},
-    {name:'Maxx Crosby',pos:'DE',team:'Raiders',emoji:'⚡',desc:'Elite Pass Rusher'},
-  ],
-  'NFC East': [
-    {name:'Jalen Hurts',pos:'QB',team:'Eagles',emoji:'🦅',desc:'Super Bowl LII QB'},
-    {name:'Dak Prescott',pos:'QB',team:'Cowboys',emoji:'⭐',desc:'4x Pro Bowl QB'},
-    {name:'Saquon Barkley',pos:'RB',team:'Eagles',emoji:'💥',desc:'2018 Offensive ROY'},
-    {name:'Jayden Daniels',pos:'QB',team:'Commanders',emoji:'🚀',desc:'2024 Offensive ROY'},
-  ],
-  'NFC North': [
-    {name:'Caleb Williams',pos:'QB',team:'Bears',emoji:'🐻',desc:'2024 #1 Overall Pick'},
-    {name:'Jared Goff',pos:'QB',team:'Lions',emoji:'🦁',desc:'Lions Revival Leader'},
-    {name:'Jordan Love',pos:'QB',team:'Packers',emoji:'🧀',desc:'Lambeau Field Leader'},
-    {name:'Justin Jefferson',pos:'WR',team:'Vikings',emoji:'🏆',desc:'Best WR in the NFL'},
-  ],
-  'NFC South': [
-    {name:'Baker Mayfield',pos:'QB',team:'Buccaneers',emoji:'🏴‍☠️',desc:'2023 Comeback POY'},
-    {name:'Kirk Cousins',pos:'QB',team:'Falcons',emoji:'🦅',desc:'Veteran Pro Bowl QB'},
-    {name:'Derek Carr',pos:'QB',team:'Saints',emoji:'⚜️',desc:'4x Pro Bowl QB'},
-    {name:'Bryce Young',pos:'QB',team:'Panthers',emoji:'🐾',desc:'2023 #1 Overall Pick'},
-  ],
-  'NFC West': [
-    {name:'Brock Purdy',pos:'QB',team:'49ers',emoji:'🌟',desc:'Mr. Irrelevant to Superstar'},
-    {name:'Matthew Stafford',pos:'QB',team:'Rams',emoji:'🏆',desc:'Super Bowl LVI Champion'},
-    {name:'Kyler Murray',pos:'QB',team:'Cardinals',emoji:'🏜️',desc:'2019 Offensive ROY'},
-    {name:'Geno Smith',pos:'QB',team:'Seahawks',emoji:'🦅',desc:'2022 Comeback POY'},
-  ],
+var PLAYERS = {
+  'AFC East':  [{n:'Josh Allen',    p:'QB',t:'Bills',     e:'🏈',d:'3x Pro Bowl Quarterback'},
+                {n:'Tua Tagovailoa',p:'QB',t:'Dolphins',  e:'🏈',d:'Pro Bowl QB'},
+                {n:'Drake Maye',    p:'QB',t:'Patriots',  e:'🏈',d:'No.3 Overall Pick 2024'},
+                {n:'Sauce Gardner', p:'CB',t:'Jets',       e:'🛡️',d:'2022 Defensive Rookie of Year'}],
+  'AFC North': [{n:'Lamar Jackson', p:'QB',t:'Ravens',    e:'⚡',d:'2x NFL MVP'},
+                {n:'Joe Burrow',    p:'QB',t:'Bengals',   e:'🏈',d:'Super Bowl LVI Quarterback'},
+                {n:'Nick Chubb',    p:'RB',t:'Browns',    e:'💪',d:'Elite NFL Running Back'},
+                {n:'T.J. Watt',     p:'LB',t:'Steelers',  e:'🔥',d:'2021 Defensive Player of Year'}],
+  'AFC South': [{n:'C.J. Stroud',   p:'QB',t:'Texans',   e:'🚀',d:'2023 Offensive Rookie of Year'},
+                {n:'Anthony Richardson',p:'QB',t:'Colts', e:'💨',d:'Explosive Athletic QB'},
+                {n:'Trevor Lawrence',p:'QB',t:'Jaguars',  e:'🦁',d:'No.1 Overall Pick 2021'},
+                {n:'Derrick Henry', p:'RB',t:'Titans',    e:'🐴',d:'2x NFL Rushing Champion'}],
+  'AFC West':  [{n:'Patrick Mahomes',p:'QB',t:'Chiefs',  e:'👑',d:'3x Super Bowl MVP'},
+                {n:'Justin Herbert',p:'QB',t:'Chargers',  e:'🌊',d:'2020 Offensive Rookie of Year'},
+                {n:'Bo Nix',        p:'QB',t:'Broncos',   e:'🐴',d:'Rising Star Quarterback'},
+                {n:'Maxx Crosby',   p:'DE',t:'Raiders',   e:'⚡',d:'Pro Bowl Pass Rusher'}],
+  'NFC East':  [{n:'Jalen Hurts',   p:'QB',t:'Eagles',   e:'🦅',d:'Pro Bowl Quarterback'},
+                {n:'Dak Prescott',  p:'QB',t:'Cowboys',   e:'⭐',d:'4x Pro Bowl Quarterback'},
+                {n:'Saquon Barkley',p:'RB',t:'Eagles',   e:'💥',d:'2018 Offensive Rookie of Year'},
+                {n:'Jayden Daniels',p:'QB',t:'Commanders',e:'🚀',d:'2024 Offensive Rookie of Year'}],
+  'NFC North': [{n:'Caleb Williams',p:'QB',t:'Bears',    e:'🐻',d:'No.1 Overall Pick 2024'},
+                {n:'Jared Goff',    p:'QB',t:'Lions',     e:'🦁',d:'Lions Franchise Leader'},
+                {n:'Jordan Love',   p:'QB',t:'Packers',   e:'🧀',d:'Lambeau Field Leader'},
+                {n:'Justin Jefferson',p:'WR',t:'Vikings', e:'🏆',d:'Best Wide Receiver in NFL'}],
+  'NFC South': [{n:'Baker Mayfield',p:'QB',t:'Buccaneers',e:'🏴‍☠️',d:'2023 Comeback Player of Year'},
+                {n:'Kirk Cousins',  p:'QB',t:'Falcons',   e:'🦅',d:'Veteran Pro Bowl QB'},
+                {n:'Derek Carr',    p:'QB',t:'Saints',    e:'⚜️',d:'4x Pro Bowl Quarterback'},
+                {n:'Bryce Young',   p:'QB',t:'Panthers',  e:'🐾',d:'No.1 Overall Pick 2023'}],
+  'NFC West':  [{n:'Brock Purdy',   p:'QB',t:'49ers',    e:'🌟',d:'Mr. Irrelevant to Superstar'},
+                {n:'Matthew Stafford',p:'QB',t:'Rams',   e:'🏆',d:'Super Bowl LVI Champion'},
+                {n:'Kyler Murray',  p:'QB',t:'Cardinals', e:'🏜️',d:'2019 Offensive Rookie of Year'},
+                {n:'Geno Smith',    p:'QB',t:'Seahawks',  e:'🦅',d:'2022 Comeback Player of Year'}]
 };
 
-const LEGENDS_POOL = [
-  {name:'Tom Brady',team:'Patriots / Buccaneers',era:'2000–2022',emoji:'👑',desc:'7x Super Bowl Champion — GOAT'},
-  {name:'Jerry Rice',team:'San Francisco 49ers',era:'1985–2004',emoji:'🏆',desc:'Greatest Wide Receiver of All Time'},
-  {name:'Lawrence Taylor',team:'New York Giants',era:'1981–1993',emoji:'💪',desc:'Greatest Defensive Player in History'},
-  {name:'Walter Payton',team:'Chicago Bears',era:'1975–1987',emoji:'⚡',desc:'"Sweetness" — Hall of Fame Legend'},
-  {name:'Peyton Manning',team:'Colts / Broncos',era:'1998–2015',emoji:'🧠',desc:'5x NFL MVP — All-Time Passer'},
-  {name:'Ray Lewis',team:'Baltimore Ravens',era:'1996–2012',emoji:'⚔️',desc:'Greatest Linebacker Ever'},
-  {name:'John Elway',team:'Denver Broncos',era:'1983–1998',emoji:'🦅',desc:'2x Super Bowl Champion & Legend'},
-  {name:'Drew Brees',team:'New Orleans Saints',era:'2001–2020',emoji:'🎯',desc:'All-Time Passing Touchdowns Record'},
-  {name:'Deion Sanders',team:'Cowboys / 49ers / Falcons',era:'1989–2005',emoji:'💎',desc:'"Prime Time" — Greatest CB Ever'},
-  {name:'Bruce Smith',team:'Buffalo Bills / Redskins',era:'1985–2003',emoji:'🔥',desc:'All-Time Sack Record Holder'},
+var LEGENDS = [
+  {n:'Tom Brady',    t:'Patriots / Buccaneers',era:'2000-2022',e:'👑',d:'7x Super Bowl Champion - the GOAT'},
+  {n:'Jerry Rice',   t:'San Francisco 49ers',  era:'1985-2004',e:'🏆',d:'Greatest Wide Receiver of All Time'},
+  {n:'Lawrence Taylor',t:'New York Giants',    era:'1981-1993',e:'💪',d:'Greatest Defensive Player in History'},
+  {n:'Walter Payton',t:'Chicago Bears',        era:'1975-1987',e:'⚡',d:'Sweetness - Hall of Fame Legend'},
+  {n:'Peyton Manning',t:'Colts and Broncos',   era:'1998-2015',e:'🧠',d:'5x NFL MVP and All Time Passer'},
+  {n:'Ray Lewis',    t:'Baltimore Ravens',     era:'1996-2012',e:'⚔️',d:'Greatest Linebacker of All Time'},
+  {n:'John Elway',   t:'Denver Broncos',       era:'1983-1998',e:'🦅',d:'2x Super Bowl Champion and Legend'},
+  {n:'Drew Brees',   t:'New Orleans Saints',   era:'2001-2020',e:'🎯',d:'All Time Passing Touchdowns Record'},
+  {n:'Deion Sanders',t:'Cowboys and 49ers',    era:'1989-2005',e:'💎',d:'Prime Time - Greatest Cornerback Ever'},
+  {n:'Bruce Smith',  t:'Buffalo Bills',        era:'1985-2003',e:'🔥',d:'All Time NFL Sack Record Holder'}
 ];
 
-const ULTRA_LEGENDS_POOL = [
-  {name:'Jim Brown',team:'Cleveland Browns',era:'1957–1965',emoji:'💎',desc:'The Greatest Running Back of All Time'},
-  {name:'Johnny Unitas',team:'Baltimore Colts',era:'1956–1973',emoji:'🌟',desc:'"The Golden Arm" — QB Pioneer'},
-  {name:'Emmitt Smith',team:'Dallas Cowboys',era:'1990–2004',emoji:'💫',desc:'All-Time NFL Rushing Record Holder'},
-  {name:'Barry Sanders',team:'Detroit Lions',era:'1989–1998',emoji:'⭐',desc:'Most Elusive Runner in NFL History'},
-  {name:'Reggie White',team:'Packers / Eagles / Panthers',era:'1984–2000',emoji:'🔥',desc:'"The Minister of Defense" — Sack Legend'},
+var ULTRA = [
+  {n:'Jim Brown',    t:'Cleveland Browns',  era:'1957-1965',e:'💎',d:'The Greatest Running Back of All Time'},
+  {n:'Johnny Unitas',t:'Baltimore Colts',   era:'1956-1973',e:'🌟',d:'The Golden Arm - Quarterback Pioneer'},
+  {n:'Emmitt Smith', t:'Dallas Cowboys',    era:'1990-2004',e:'💫',d:'NFL All Time Rushing Record Holder'},
+  {n:'Barry Sanders',t:'Detroit Lions',     era:'1989-1998',e:'⭐',d:'Most Elusive Runner in NFL History'},
+  {n:'Reggie White', t:'Packers and Eagles',era:'1984-2000',e:'🔥',d:'The Minister of Defense - Sack Legend'}
 ];
 
-const NFL_TEAMS_ALL = [
-  {name:'Bills',emoji:'🏈',city:'Buffalo'},{name:'Dolphins',emoji:'🐬',city:'Miami'},
-  {name:'Patriots',emoji:'🇺🇸',city:'New England'},{name:'Jets',emoji:'✈️',city:'New York'},
-  {name:'Ravens',emoji:'🦅',city:'Baltimore'},{name:'Bengals',emoji:'🐯',city:'Cincinnati'},
-  {name:'Browns',emoji:'🐾',city:'Cleveland'},{name:'Steelers',emoji:'⚙️',city:'Pittsburgh'},
-  {name:'Texans',emoji:'🤠',city:'Houston'},{name:'Colts',emoji:'🐴',city:'Indianapolis'},
-  {name:'Jaguars',emoji:'🐆',city:'Jacksonville'},{name:'Titans',emoji:'⚡',city:'Tennessee'},
-  {name:'Broncos',emoji:'🐎',city:'Denver'},{name:'Chiefs',emoji:'👑',city:'Kansas City'},
-  {name:'Raiders',emoji:'☠️',city:'Las Vegas'},{name:'Chargers',emoji:'⚡',city:'Los Angeles'},
-  {name:'Cowboys',emoji:'⭐',city:'Dallas'},{name:'Giants',emoji:'🗽',city:'New York'},
-  {name:'Eagles',emoji:'🦅',city:'Philadelphia'},{name:'Commanders',emoji:'🪖',city:'Washington'},
-  {name:'Bears',emoji:'🐻',city:'Chicago'},{name:'Lions',emoji:'🦁',city:'Detroit'},
-  {name:'Packers',emoji:'🧀',city:'Green Bay'},{name:'Vikings',emoji:'⚔️',city:'Minnesota'},
-  {name:'Falcons',emoji:'🦅',city:'Atlanta'},{name:'Panthers',emoji:'🐾',city:'Carolina'},
-  {name:'Saints',emoji:'⚜️',city:'New Orleans'},{name:'Buccaneers',emoji:'🏴‍☠️',city:'Tampa Bay'},
-  {name:'Cardinals',emoji:'🐦',city:'Arizona'},{name:'Rams',emoji:'🐏',city:'Los Angeles'},
-  {name:'49ers',emoji:'⛏️',city:'San Francisco'},{name:'Seahawks',emoji:'🦅',city:'Seattle'},
+var ALL_TEAMS = [
+  {n:'Bills',e:'🏈',c:'Buffalo'},{n:'Dolphins',e:'🐬',c:'Miami'},{n:'Patriots',e:'🦅',c:'New England'},{n:'Jets',e:'✈️',c:'New York'},
+  {n:'Ravens',e:'🦅',c:'Baltimore'},{n:'Bengals',e:'🐯',c:'Cincinnati'},{n:'Browns',e:'🐶',c:'Cleveland'},{n:'Steelers',e:'⚙️',c:'Pittsburgh'},
+  {n:'Texans',e:'🤠',c:'Houston'},{n:'Colts',e:'🐴',c:'Indianapolis'},{n:'Jaguars',e:'🐆',c:'Jacksonville'},{n:'Titans',e:'⚡',c:'Tennessee'},
+  {n:'Broncos',e:'🐎',c:'Denver'},{n:'Chiefs',e:'👑',c:'Kansas City'},{n:'Raiders',e:'☠️',c:'Las Vegas'},{n:'Chargers',e:'⚡',c:'LA Chargers'},
+  {n:'Cowboys',e:'⭐',c:'Dallas'},{n:'Giants',e:'🗽',c:'New York'},{n:'Eagles',e:'🦅',c:'Philadelphia'},{n:'Commanders',e:'🪖',c:'Washington'},
+  {n:'Bears',e:'🐻',c:'Chicago'},{n:'Lions',e:'🦁',c:'Detroit'},{n:'Packers',e:'🧀',c:'Green Bay'},{n:'Vikings',e:'⚔️',c:'Minnesota'},
+  {n:'Falcons',e:'🦅',c:'Atlanta'},{n:'Panthers',e:'🐾',c:'Carolina'},{n:'Saints',e:'⚜️',c:'New Orleans'},{n:'Buccaneers',e:'🏴‍☠️',c:'Tampa Bay'},
+  {n:'Cardinals',e:'🐦',c:'Arizona'},{n:'Rams',e:'🐏',c:'LA Rams'},{n:'49ers',e:'⛏️',c:'San Francisco'},{n:'Seahawks',e:'🦅',c:'Seattle'}
 ];
 
-// ════════════════════════════════════════
-// GAME STATE
-// ════════════════════════════════════════
-let state = {
-  playerName: '',
-  currentDivision: 'AFC East',
-  collected: {},          // {division: [teams...]}
-  questionIndex: {},      // {team: nextQuestionIndex}
-  playerCards: [],
-  legendCards: [],
-  ultraCards: [],
-  teamCards: [],
-  pendingLegendCount: 0,  // players accumulated toward next legend
-  pendingUltraCount: 0,   // legends accumulated toward next ultra
-  pendingTeamCount: 0,    // legends accumulated toward next team
-  divisionPlayerIndex: {},// {division: nextPlayerIndex}
-  legendPoolIndex: 0,
-  ultraPoolIndex: 0,
-  teamsPoolIndex: 0,
-  currentQuestion: null,
-  answering: false,
-  questionsAnswered: 0,
+// ==================== GAME STATE ====================
+var G = {
+  name:'',
+  div:'AFC East',
+  collected:{},
+  qIdx:{},
+  divPIdx:{},
+  players:[],
+  legends:[],
+  ultras:[],
+  teamCards:[],
+  pendPlayers:0,
+  pendUltra:0,
+  pendTeam:0,
+  legIdx:0,
+  ultraIdx:0,
+  teamIdx:0,
+  curQ:null,
+  busy:false,
+  qCount:0
 };
 
-function initState() {
-  state.collected = {};
-  state.questionIndex = {};
-  state.divisionPlayerIndex = {};
-  Object.keys(DIVISIONS).forEach(d => {
-    state.collected[d] = [];
-    state.divisionPlayerIndex[d] = 0;
+function resetG() {
+  G.collected={};G.qIdx={};G.divPIdx={};
+  G.players=[];G.legends=[];G.ultras=[];G.teamCards=[];
+  G.pendPlayers=0;G.pendUltra=0;G.pendTeam=0;
+  G.legIdx=0;G.ultraIdx=0;G.teamIdx=0;
+  G.curQ=null;G.busy=false;G.qCount=0;
+  Object.keys(DIVS).forEach(function(d){G.collected[d]=[];G.divPIdx[d]=0;});
+  Object.keys(TEAMS).forEach(function(t){G.qIdx[t]=0;});
+}
+
+// ==================== SCREENS ====================
+function show(id) {
+  ['welcome','game','coll','win'].forEach(function(s){
+    var el=document.getElementById(s);
+    if(s===id){el.classList.remove('hidden');}
+    else{el.classList.add('hidden');}
   });
-  Object.keys(TEAM_INFO).forEach(t => { state.questionIndex[t] = 0; });
-  state.playerCards = [];
-  state.legendCards = [];
-  state.ultraCards = [];
-  state.teamCards = [];
-  state.pendingLegendCount = 0;
-  state.pendingUltraCount = 0;
-  state.pendingTeamCount = 0;
-  state.legendPoolIndex = 0;
-  state.ultraPoolIndex = 0;
-  state.teamsPoolIndex = 0;
-  state.currentQuestion = null;
-  state.answering = false;
-  state.questionsAnswered = 0;
-}
-
-// ════════════════════════════════════════
-// FOOTBALL SVG
-// ════════════════════════════════════════
-function footballSVG(team, size = 100) {
-  const info = TEAM_INFO[team];
-  if (!info) return '';
-  const p = info.primary, s = info.secondary, abbr = info.abbr;
-  const w = size, h = Math.round(size * 0.65);
-  const cx = w/2, cy = h/2;
-  // Football body path with pointed ends
-  const path = `M ${w*0.06},${cy} C ${w*0.1},${h*0.06} ${w*0.32},${h*0.02} ${cx},${h*0.02} C ${w*0.68},${h*0.02} ${w*0.9},${h*0.06} ${w*0.94},${cy} C ${w*0.9},${h*0.94} ${w*0.68},${h*0.98} ${cx},${h*0.98} C ${w*0.32},${h*0.98} ${w*0.1},${h*0.94} ${w*0.06},${cy} Z`;
-  const laceX = cx;
-  const lY1 = h*0.1, lY2 = h*0.9;
-  const fs = Math.round(size * 0.15);
-  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="fg${abbr}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:${p};stop-opacity:1"/>
-        <stop offset="100%" style="stop-color:${lighten(p)};stop-opacity:1"/>
-      </linearGradient>
-      <filter id="fs${abbr}"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.5"/></filter>
-    </defs>
-    <path d="${path}" fill="url(#fg${abbr})" filter="url(#fs${abbr})"/>
-    <path d="${path}" fill="none" stroke="${s}" stroke-width="2.5"/>
-    <path d="${path}" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="6"/>
-    <line x1="${laceX}" y1="${lY1}" x2="${laceX}" y2="${lY2}" stroke="white" stroke-width="2"/>
-    <line x1="${cx-9}" y1="${h*0.3}" x2="${cx+9}" y2="${h*0.3}" stroke="white" stroke-width="1.8"/>
-    <line x1="${cx-11}" y1="${h*0.43}" x2="${cx+11}" y2="${h*0.43}" stroke="white" stroke-width="1.8"/>
-    <line x1="${cx-11}" y1="${h*0.56}" x2="${cx+11}" y2="${h*0.56}" stroke="white" stroke-width="1.8"/>
-    <line x1="${cx-9}" y1="${h*0.69}" x2="${cx+9}" y2="${h*0.69}" stroke="white" stroke-width="1.8"/>
-    <text x="${cx*0.52}" y="${cy + fs*0.35}" text-anchor="middle" fill="white"
-      font-size="${fs}" font-weight="900" font-family="Arial Black,Arial">${abbr}</text>
-  </svg>`;
-}
-
-function lighten(hex) {
-  try {
-    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-    const lr = Math.min(255, r+40), lg = Math.min(255, g+40), lb = Math.min(255, b+40);
-    return `#${lr.toString(16).padStart(2,'0')}${lg.toString(16).padStart(2,'0')}${lb.toString(16).padStart(2,'0')}`;
-  } catch(e) { return hex; }
-}
-
-// ════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════
-function init() {
-  // Generate QR code
-  try {
-    new QRCode(document.getElementById('qrcode'), {
-      text: 'https://wrcarpenter2018.github.io/nfl',
-      width: 130, height: 130,
-      colorDark: '#013369', colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
-    });
-  } catch(e) { console.warn('QR code failed', e); }
-  generateStars();
-}
-
-function generateStars() {
-  const c = document.getElementById('stars');
-  for (let i = 0; i < 80; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const sz = Math.random() * 2.5 + 0.5;
-    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:${(Math.random()*5).toFixed(1)}s;--op:${(Math.random()*0.7+0.1).toFixed(2)}`;
-    c.appendChild(s);
-  }
-}
-
-// ════════════════════════════════════════
-// NAVIGATION
-// ════════════════════════════════════════
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
 }
 
 function startGame() {
-  const name = document.getElementById('playerNameInput').value.trim();
-  if (!name) { alert('Please enter your name!'); return; }
-  state.playerName = name;
-  initState();
-  buildDivTabs();
-  showScreen('gameScreen');
-  document.getElementById('headerPlayerName').textContent = name;
-  selectDivision('AFC East');
+  var name = document.getElementById('nameInput').value.trim();
+  if(!name){alert('Please enter your name first!');return;}
+  G.name = name;
+  resetG();
+  buildTabs();
+  show('game');
+  document.getElementById('hdrName').textContent = name;
+  selectDiv('AFC East');
 }
 
-function showCollection() {
-  renderCollection();
-  showScreen('collectionScreen');
+function showColl() {
+  renderColl();
+  show('coll');
 }
 
-function showGame() { showScreen('gameScreen'); }
+function showGame() {
+  show('game');
+}
 
 function restartGame() {
-  showScreen('welcomeScreen');
-  document.getElementById('playerNameInput').value = '';
+  show('welcome');
+  document.getElementById('nameInput').value='';
 }
 
-// ════════════════════════════════════════
-// DIVISION TABS
-// ════════════════════════════════════════
-function buildDivTabs() {
-  const container = document.getElementById('divTabs');
-  container.innerHTML = '';
-  Object.keys(DIVISIONS).forEach(div => {
-    const btn = document.createElement('button');
-    btn.className = 'div-tab';
-    btn.textContent = div;
-    btn.id = `tab_${div.replace(' ','_')}`;
-    btn.onclick = () => selectDivision(div);
-    container.appendChild(btn);
+// ==================== TABS ====================
+function buildTabs() {
+  var c=document.getElementById('divTabs');
+  c.innerHTML='';
+  Object.keys(DIVS).forEach(function(d){
+    var b=document.createElement('button');
+    b.className='d-tab';
+    b.id='tab_'+d.replace(/ /g,'_');
+    b.textContent=d;
+    b.onclick=function(){selectDiv(d);};
+    c.appendChild(b);
   });
 }
 
-function selectDivision(div) {
-  state.currentDivision = div;
-  document.querySelectorAll('.div-tab').forEach(t => t.classList.remove('active'));
-  const tab = document.getElementById(`tab_${div.replace(' ','_')}`);
-  if (tab) {
-    tab.classList.add('active');
-    tab.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
-  }
-  updateCaseUI();
-  generateQuestion();
+function selectDiv(d) {
+  G.div=d;
+  document.querySelectorAll('.d-tab').forEach(function(t){t.classList.remove('active');});
+  var tab=document.getElementById('tab_'+d.replace(/ /g,'_'));
+  if(tab){tab.classList.add('active');tab.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}
+  renderCase();
+  nextQ();
 }
 
-function isDivisionComplete(div) {
-  return (state.collected[div] || []).length >= 4;
-}
-
-// ════════════════════════════════════════
-// QUESTION GENERATION
-// ════════════════════════════════════════
-function generateQuestion() {
-  const div = state.currentDivision;
-  const teams = DIVISIONS[div];
-  const uncollected = teams.filter(t => !(state.collected[div] || []).includes(t));
-
-  if (uncollected.length === 0) {
-    // All collected — show congrats
-    document.getElementById('qNum').textContent = '✅ DIVISION COMPLETE!';
-    document.getElementById('qText').textContent = `You collected all ${div} footballs! Choose another division or keep playing!`;
-    document.getElementById('footballsGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:#00ee88;font-size:15px;">Division Complete! 🎉</div>`;
+// ==================== QUESTION ====================
+function nextQ() {
+  var d=G.div;
+  var teams=DIVS[d];
+  var uncollected=teams.filter(function(t){return G.collected[d].indexOf(t)===-1;});
+  if(uncollected.length===0){
+    document.getElementById('qNum').textContent='DIVISION COMPLETE!';
+    document.getElementById('qText').textContent='You collected all '+d+' footballs! Pick another division or replay this one.';
+    document.getElementById('fbGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:#00ee88;font-size:16px;">Division Complete! Great job!</div>';
     return;
   }
-
-  // Pick a random uncollected team as the correct answer
-  const correctTeam = uncollected[Math.floor(Math.random() * uncollected.length)];
-  const wrongTeams = teams.filter(t => t !== correctTeam);
-
-  // Get next question for this team
-  const qList = TRIVIA[correctTeam] || ["Which team is this?"];
-  const qi = state.questionIndex[correctTeam] % qList.length;
-  state.questionIndex[correctTeam] = qi + 1;
-  const question = qList[qi];
-
-  // Shuffle answer order
-  const allTeams = [correctTeam, ...wrongTeams];
-  for (let i = allTeams.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [allTeams[i], allTeams[j]] = [allTeams[j], allTeams[i]];
-  }
-
-  state.currentQuestion = { question, correctTeam, answers: allTeams, division: div };
-  state.answering = false;
-  state.questionsAnswered++;
-
-  renderQuestion();
+  // Pick random uncollected team as correct
+  var correct=uncollected[Math.floor(Math.random()*uncollected.length)];
+  var wrong=teams.filter(function(t){return t!==correct;});
+  // Get question
+  var qs=TRIVIA[correct]||['Which team is this?'];
+  var qi=G.qIdx[correct]%qs.length;
+  G.qIdx[correct]++;
+  var q=qs[qi];
+  // Shuffle all 4 teams
+  var all=[correct,wrong[0],wrong[1],wrong[2]];
+  for(var i=all.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=all[i];all[i]=all[j];all[j]=tmp;}
+  G.curQ={q:q,correct:correct,answers:all,div:d};
+  G.busy=false;
+  G.qCount++;
+  renderQ();
 }
 
-function renderQuestion() {
-  const q = state.currentQuestion;
-  if (!q) return;
-
-  document.getElementById('qDivisionBadge').textContent = q.division.toUpperCase();
-  document.getElementById('qNum').textContent = `QUESTION ${state.questionsAnswered}`;
-  document.getElementById('qText').textContent = q.question;
-
-  const grid = document.getElementById('footballsGrid');
-  grid.innerHTML = '';
-
-  q.answers.forEach(team => {
-    const btn = document.createElement('button');
-    btn.className = 'fb-btn';
-    btn.id = `fbtn_${team}`;
-    btn.innerHTML = `
-      ${footballSVG(team, 110)}
-      <div class="fb-teamname">${TEAM_INFO[team]?.city || team}</div>
-    `;
-    btn.onclick = () => handleAnswer(team);
+function renderQ() {
+  var q=G.curQ;
+  document.getElementById('qBadge').textContent=q.div.toUpperCase();
+  document.getElementById('qNum').textContent='QUESTION '+G.qCount;
+  document.getElementById('qText').textContent=q.q;
+  var grid=document.getElementById('fbGrid');
+  grid.innerHTML='';
+  q.answers.forEach(function(team){
+    var info=TEAMS[team];
+    if(!info)return;
+    var btn=document.createElement('button');
+    btn.className='fb-btn';
+    btn.id='fb_'+team;
+    var ball=document.createElement('div');
+    ball.className='fb-ball';
+    ball.style.background=info.p;
+    ball.style.border='2px solid '+info.s;
+    ball.textContent=info.a;
+    var city=document.createElement('div');
+    city.className='fb-city';
+    city.textContent=info.c;
+    btn.appendChild(ball);
+    btn.appendChild(city);
+    btn.onclick=function(){answer(team);};
     grid.appendChild(btn);
   });
 }
 
-// ════════════════════════════════════════
-// ANSWER HANDLING
-// ════════════════════════════════════════
-function handleAnswer(chosenTeam) {
-  if (state.answering) return;
-  state.answering = true;
-
-  const q = state.currentQuestion;
-  const correct = q.correctTeam;
-  const div = q.division;
-
-  document.querySelectorAll('.fb-btn').forEach(b => b.classList.add('disabled'));
-
-  if (chosenTeam === correct) {
-    document.getElementById(`fbtn_${correct}`).classList.add('correct');
-    // Collect the football
-    if (!state.collected[div]) state.collected[div] = [];
-    if (!state.collected[div].includes(correct)) state.collected[div].push(correct);
-    updateCaseUI();
-    showToast('✅', `Correct! You got the ${correct} football!`, true);
-    setTimeout(() => {
-      hideToast();
-      checkDivisionComplete(div);
-    }, 1600);
+// ==================== ANSWER ====================
+function answer(chosen) {
+  if(G.busy)return;
+  G.busy=true;
+  var correct=G.curQ.correct;
+  var d=G.curQ.div;
+  // Disable all
+  document.querySelectorAll('.fb-btn').forEach(function(b){b.classList.add('disabled');});
+  if(chosen===correct){
+    document.getElementById('fb_'+correct).classList.add('correct');
+    if(G.collected[d].indexOf(correct)===-1)G.collected[d].push(correct);
+    renderCase();
+    toast('✅','Correct! You got the '+correct+' football!',true);
+    setTimeout(function(){clearToast();checkDiv(d);},1700);
   } else {
-    document.getElementById(`fbtn_${chosenTeam}`).classList.add('wrong');
-    document.getElementById(`fbtn_${correct}`).classList.add('correct');
-    showToast('❌', `Wrong! The answer was the ${correct}!`, false);
-    setTimeout(() => {
-      hideToast();
-      state.answering = false;
-      generateQuestion();
-    }, 2000);
+    document.getElementById('fb_'+chosen).classList.add('wrong');
+    document.getElementById('fb_'+correct).classList.add('correct');
+    toast('❌','Wrong! The answer was the '+correct+'!',false);
+    setTimeout(function(){clearToast();G.busy=false;nextQ();},2100);
   }
 }
 
-function checkDivisionComplete(div) {
-  if (isDivisionComplete(div)) {
-    // Award player
-    const pool = DIVISION_PLAYER_POOLS[div];
-    const idx = state.divisionPlayerIndex[div] % pool.length;
-    state.divisionPlayerIndex[div]++;
-    const player = pool[idx];
-    state.playerCards.push({...player, division: div});
-    state.pendingLegendCount++;
-    state.pendingTeamCount++;
-    updateDivTab(div);
+function checkDiv(d) {
+  if(G.collected[d].length>=4){
+    var pool=PLAYERS[d];
+    var pi=G.divPIdx[d]%pool.length;
+    G.divPIdx[d]++;
+    var player=pool[pi];
+    G.players.push(player);
+    G.pendPlayers++;
+    G.pendTeam++;
+    // Mark tab done and reset division for replay
+    var tab=document.getElementById('tab_'+d.replace(/ /g,'_'));
+    if(tab)tab.classList.add('done');
+    G.collected[d]=[];
+    renderCase();
     updateStats();
-    // Reset division so you can play it again
-    state.collected[div] = [];
-    updateCaseUI();
-    showReward('player', player, () => {
-      checkLegendThreshold();
-    });
+    showModal('player',player,function(){checkLegend();});
   } else {
-    state.answering = false;
-    generateQuestion();
+    G.busy=false;
+    nextQ();
   }
 }
 
-function checkLegendThreshold() {
-  if (state.pendingLegendCount >= 5) {
-    state.pendingLegendCount -= 5;
-    const legend = LEGENDS_POOL[state.legendPoolIndex % LEGENDS_POOL.length];
-    state.legendPoolIndex++;
-    state.legendCards.push(legend);
-    state.pendingUltraCount++;
+function checkLegend() {
+  if(G.pendPlayers>=5){
+    G.pendPlayers-=5;
+    var leg=LEGENDS[G.legIdx%LEGENDS.length];
+    G.legIdx++;
+    G.legends.push(leg);
+    G.pendUltra++;
     updateStats();
-    showReward('legend', legend, () => {
-      checkUltraThreshold();
-      checkTeamThreshold();
-    });
+    showModal('legend',leg,function(){checkUltra();checkTeam();});
   } else {
-    generateQuestion();
+    nextQ();
   }
 }
 
-function checkTeamThreshold() {
-  if (state.pendingTeamCount >= 5) {
-    state.pendingTeamCount -= 5;
-    const team = NFL_TEAMS_ALL[state.teamsPoolIndex % NFL_TEAMS_ALL.length];
-    state.teamsPoolIndex++;
-    if (!state.teamCards.find(t => t.name === team.name)) {
-      state.teamCards.push(team);
-    }
+function checkUltra() {
+  if(G.pendUltra>=10){
+    G.pendUltra-=10;
+    var ul=ULTRA[G.ultraIdx%ULTRA.length];
+    G.ultraIdx++;
+    G.ultras.push(ul);
     updateStats();
-    showReward('team', {name: team.name + ' Team Card', emoji: team.emoji, desc: `${team.city} NFL Team`, era: 'Add to your collection!'}, () => {
-      checkWin();
-    });
+    showModal('ultra',ul,function(){checkWin();});
   } else {
     checkWin();
   }
 }
 
-function checkUltraThreshold() {
-  if (state.pendingUltraCount >= 10) {
-    state.pendingUltraCount -= 10;
-    const ultra = ULTRA_LEGENDS_POOL[state.ultraPoolIndex % ULTRA_LEGENDS_POOL.length];
-    state.ultraPoolIndex++;
-    state.ultraCards.push(ultra);
+function checkTeam() {
+  if(G.pendTeam>=5){
+    G.pendTeam-=5;
+    var tm=ALL_TEAMS[G.teamIdx%ALL_TEAMS.length];
+    G.teamIdx++;
+    var already=G.teamCards.some(function(x){return x.n===tm.n;});
+    if(!already)G.teamCards.push(tm);
     updateStats();
-    showReward('ultra', ultra, () => {
-      checkWin();
-    });
+    showModal('team',{n:tm.n+' Team Card',e:tm.e,d:tm.c+' NFL Team',era:'Collect all 32 teams!'},function(){checkWin();});
   } else {
     checkWin();
   }
 }
 
 function checkWin() {
-  // Win condition 1: 5 ultra legends
-  if (state.ultraCards.length >= 5) {
-    setTimeout(() => triggerWin('ULTRA CHAMPION!', 'You collected 5 Ultra Legends — you are the greatest NFL fan alive!', '💎'), 500);
+  if(G.ultras.length>=5){
+    document.getElementById('winEm').textContent='💎';
+    document.getElementById('winTit').textContent='ULTRA CHAMPION!';
+    document.getElementById('winSub').textContent='You collected 5 Ultra Legends. You are the greatest NFL fan!';
+    show('win');
     return;
   }
-  // Win condition 2: all 32 teams + at least 1 ultra legend
-  const uniqueTeams = new Set(state.teamCards.map(t => t.name));
-  if (uniqueTeams.size >= 32 && state.ultraCards.length >= 1) {
-    setTimeout(() => triggerWin('ULTIMATE CHAMPION!', 'You collected all 32 NFL Teams and an Ultra Legend. You are LEGENDARY!', '🏆'), 500);
+  var unique=G.teamCards.length;
+  if(unique>=32&&G.ultras.length>=1){
+    document.getElementById('winEm').textContent='🏆';
+    document.getElementById('winTit').textContent='ULTIMATE CHAMPION!';
+    document.getElementById('winSub').textContent='All 32 teams and an Ultra Legend. You are LEGENDARY!';
+    show('win');
     return;
   }
-  generateQuestion();
+  nextQ();
 }
 
-function triggerWin(title, sub, emoji) {
-  document.getElementById('winTitle').textContent = title;
-  document.getElementById('winSub').textContent = sub;
-  document.getElementById('winEmoji').textContent = emoji;
-  showScreen('winScreen');
-}
-
-// ════════════════════════════════════════
-// REWARD MODAL
-// ════════════════════════════════════════
-let rewardCallback = null;
-
-function showReward(type, data, callback) {
-  rewardCallback = callback;
-  const card = document.getElementById('rewardCard');
-  const badge = document.getElementById('rewardTypeBadge');
-  const emoji = document.getElementById('rewardEmoji');
-  const name = document.getElementById('rewardName');
-  const desc = document.getElementById('rewardDesc');
-  const era = document.getElementById('rewardEra');
-  const progress = document.getElementById('rewardProgress');
-
-  card.className = 'reward-card';
-
-  if (type === 'player') {
-    card.classList.add('rtype-player');
-    badge.className = 'rtype-badge player';
-    badge.textContent = '🏈 PLAYER EARNED!';
-    emoji.textContent = data.emoji;
-    name.textContent = data.name;
-    desc.textContent = `${data.pos} · ${data.team}`;
-    era.textContent = data.desc;
-    progress.textContent = `Players toward next Legend: ${state.pendingLegendCount}/5`;
-  } else if (type === 'legend') {
-    card.classList.add('rtype-legend');
-    badge.className = 'rtype-badge legend';
-    badge.textContent = '🌟 LEGEND UNLOCKED!';
-    emoji.textContent = data.emoji;
-    name.textContent = data.name;
-    desc.textContent = data.team;
-    era.textContent = `${data.era} · ${data.desc}`;
-    progress.textContent = `Legends toward next Ultra Legend: ${state.pendingUltraCount}/10`;
-  } else if (type === 'ultra') {
-    card.classList.add('rtype-ultra');
-    badge.className = 'rtype-badge ultra';
-    badge.textContent = '💎 ULTRA LEGEND!';
-    emoji.textContent = data.emoji;
-    name.textContent = data.name;
-    desc.textContent = data.team;
-    era.textContent = `${data.era} · ${data.desc}`;
-    progress.textContent = `Ultra Legends: ${state.ultraCards.length}/5 — Keep going!`;
-  } else if (type === 'team') {
-    card.classList.add('rtype-team');
-    badge.className = 'rtype-badge team';
-    badge.textContent = '🏆 TEAM CARD EARNED!';
-    emoji.textContent = data.emoji;
-    name.textContent = data.name;
-    desc.textContent = data.desc;
-    era.textContent = data.era;
-    progress.textContent = `Team Cards: ${state.teamCards.length}/32`;
-  }
-
-  document.getElementById('rewardModal').classList.add('show');
-}
-
-function closeReward() {
-  document.getElementById('rewardModal').classList.remove('show');
-  if (rewardCallback) { const cb = rewardCallback; rewardCallback = null; cb(); }
-}
-
-// ════════════════════════════════════════
-// CASE UI
-// ════════════════════════════════════════
-function updateCaseUI() {
-  const div = state.currentDivision;
-  const teams = DIVISIONS[div];
-  const collected = state.collected[div] || [];
-
-  document.getElementById('caseDivisionName').textContent = `${div.toUpperCase()} DIVISION CASE`;
-
-  const slots = document.getElementById('caseSlots');
-  slots.innerHTML = '';
-  teams.forEach(team => {
-    const slot = document.createElement('div');
-    const isCollected = collected.includes(team);
-    slot.className = `case-slot${isCollected ? ' filled' : ''}`;
-    if (isCollected) {
-      slot.innerHTML = footballSVG(team, 70) + `<span class="case-checkmark">✓</span>`;
+// ==================== CASE ====================
+function renderCase() {
+  var d=G.div;
+  var teams=DIVS[d];
+  var got=G.collected[d]||[];
+  document.getElementById('caseTitle').textContent=d.toUpperCase()+' DIVISION CASE';
+  var sl=document.getElementById('caseSlots');
+  sl.innerHTML='';
+  teams.forEach(function(team){
+    var info=TEAMS[team];
+    if(!info)return;
+    var isGot=got.indexOf(team)!==-1;
+    var s=document.createElement('div');
+    s.className='cs'+(isGot?' filled':'');
+    if(isGot){
+      var ball=document.createElement('div');
+      ball.className='fb-ball';
+      ball.style.background=info.p;
+      ball.style.border='2px solid '+info.s;
+      ball.style.width='60px';
+      ball.style.height='40px';
+      ball.style.fontSize='10px';
+      ball.textContent=info.a;
+      s.appendChild(ball);
+      var chk=document.createElement('div');
+      chk.className='cs-check';
+      chk.textContent='✓';
+      s.appendChild(chk);
     } else {
-      slot.innerHTML = `<div class="case-empty-icon">🏈</div><div class="case-slot-label">${TEAM_INFO[team]?.abbr}</div>`;
+      s.innerHTML='<div class="cs-empty">🏈</div><div class="cs-lbl">'+info.a+'</div>';
     }
-    slots.appendChild(slot);
+    sl.appendChild(s);
   });
 }
 
-// ════════════════════════════════════════
-// STATS & UI UPDATES
-// ════════════════════════════════════════
+// ==================== STATS ====================
 function updateStats() {
-  document.getElementById('statPlayers').textContent = state.playerCards.length;
-  document.getElementById('statLegends').textContent = state.legendCards.length;
-  document.getElementById('statUltra').textContent = state.ultraCards.length;
-  document.getElementById('statTeams').textContent = state.teamCards.length;
-
-  const pendP = state.pendingLegendCount;
-  document.getElementById('progPlayer').style.width = `${(pendP/5)*100}%`;
-  document.getElementById('progPlayerTxt').textContent = `${pendP}/5`;
-
-  const pendL = state.pendingUltraCount;
-  document.getElementById('progLegend').style.width = `${(pendL/10)*100}%`;
-  document.getElementById('progLegendTxt').textContent = `${pendL}/10`;
-
-  document.getElementById('progUltra').style.width = `${(state.ultraCards.length/5)*100}%`;
-  document.getElementById('progUltraTxt').textContent = `${state.ultraCards.length}/5`;
-
-  const uniqueTeams = new Set(state.teamCards.map(t => t.name)).size;
-  document.getElementById('progTeam').style.width = `${(uniqueTeams/32)*100}%`;
-  document.getElementById('progTeamTxt').textContent = `${uniqueTeams}/32`;
+  document.getElementById('sPlayers').textContent=G.players.length;
+  document.getElementById('sLegends').textContent=G.legends.length;
+  document.getElementById('sUltra').textContent=G.ultras.length;
+  document.getElementById('sTeams').textContent=G.teamCards.length;
+  var pp=G.pendPlayers;
+  document.getElementById('ppPlayer').style.width=(pp/5*100)+'%';
+  document.getElementById('ppPlayerTxt').textContent=pp+'/5';
+  var pu=G.pendUltra;
+  document.getElementById('ppLegend').style.width=(pu/10*100)+'%';
+  document.getElementById('ppLegendTxt').textContent=pu+'/10';
+  document.getElementById('ppUltra').style.width=(G.ultras.length/5*100)+'%';
+  document.getElementById('ppUltraTxt').textContent=G.ultras.length+'/5';
+  document.getElementById('ppTeam').style.width=(G.teamCards.length/32*100)+'%';
+  document.getElementById('ppTeamTxt').textContent=G.teamCards.length+'/32';
 }
 
-function updateDivTab(div) {
-  const tab = document.getElementById(`tab_${div.replace(' ','_')}`);
-  if (tab) tab.classList.add('done');
+// ==================== TOAST ====================
+var toastTmr=null;
+function toast(icon,msg,good) {
+  clearTimeout(toastTmr);
+  document.getElementById('toastIcon').textContent=icon;
+  document.getElementById('toastMsg').textContent=msg;
+  var t=document.getElementById('toast');
+  t.className='show '+(good?'good':'bad');
+}
+function clearToast(){document.getElementById('toast').className='';}
+
+// ==================== MODAL ====================
+var modalCB=null;
+function showModal(type,data,cb) {
+  modalCB=cb;
+  var card=document.getElementById('mCard');
+  var badge=document.getElementById('mBadge');
+  card.className='m-card';
+  if(type==='player'){
+    card.classList.add('mplayer');
+    badge.className='m-badge bp';
+    badge.textContent='PLAYER EARNED!';
+    document.getElementById('mEmoji').textContent=data.e||'🏈';
+    document.getElementById('mName').textContent=data.n;
+    document.getElementById('mDesc').textContent=(data.p||'')+(data.t?' | '+data.t:'');
+    document.getElementById('mEra').textContent=data.d||'';
+    document.getElementById('mProg').textContent='Players toward next Legend: '+G.pendPlayers+'/5';
+  } else if(type==='legend'){
+    card.classList.add('mlegend');
+    badge.className='m-badge bl';
+    badge.textContent='LEGEND UNLOCKED!';
+    document.getElementById('mEmoji').textContent=data.e||'🌟';
+    document.getElementById('mName').textContent=data.n;
+    document.getElementById('mDesc').textContent=data.t||'';
+    document.getElementById('mEra').textContent=(data.era||'')+(data.d?' | '+data.d:'');
+    document.getElementById('mProg').textContent='Legends toward Ultra: '+G.pendUltra+'/10';
+  } else if(type==='ultra'){
+    card.classList.add('multra');
+    badge.className='m-badge bu';
+    badge.textContent='ULTRA LEGEND!';
+    document.getElementById('mEmoji').textContent=data.e||'💎';
+    document.getElementById('mName').textContent=data.n;
+    document.getElementById('mDesc').textContent=data.t||'';
+    document.getElementById('mEra').textContent=(data.era||'')+(data.d?' | '+data.d:'');
+    document.getElementById('mProg').textContent='Ultra Legends: '+G.ultras.length+'/5';
+  } else if(type==='team'){
+    card.classList.add('mteam');
+    badge.className='m-badge bt';
+    badge.textContent='TEAM CARD!';
+    document.getElementById('mEmoji').textContent=data.e||'🏆';
+    document.getElementById('mName').textContent=data.n;
+    document.getElementById('mDesc').textContent=data.d||'';
+    document.getElementById('mEra').textContent=data.era||'';
+    document.getElementById('mProg').textContent='Teams collected: '+G.teamCards.length+'/32';
+  }
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+  if(modalCB){var f=modalCB;modalCB=null;f();}
 }
 
-// ════════════════════════════════════════
-// TOAST
-// ════════════════════════════════════════
-let toastTimer = null;
-
-function showToast(icon, msg, correct) {
-  const t = document.getElementById('feedbackToast');
-  document.getElementById('toastIcon').textContent = icon;
-  document.getElementById('toastMsg').textContent = msg;
-  t.className = correct ? 'show correct-toast' : 'show wrong-toast';
-  if (toastTimer) clearTimeout(toastTimer);
-}
-
-function hideToast() {
-  document.getElementById('feedbackToast').className = '';
-}
-
-// ════════════════════════════════════════
-// COLLECTION RENDER
-// ════════════════════════════════════════
-function renderCollection() {
-  document.getElementById('collPlayerTag').textContent = `${state.playerName}'s Collection`;
-
+// ==================== COLLECTION ====================
+function renderColl() {
+  document.getElementById('collSub').textContent=G.name+"'s Collection";
   // Division progress
-  const dpg = document.getElementById('divProgressGrid');
-  dpg.innerHTML = '';
-  Object.entries(DIVISIONS).forEach(([div, teams]) => {
-    const collected = state.collected[div] || [];
-    const card = document.createElement('div');
-    card.className = 'div-prog-card';
-    card.innerHTML = `<div class="div-prog-name">${div}</div>
-      <div class="div-prog-footballs">
-        ${teams.map(t => `<span class="div-prog-fb ${collected.includes(t)?'collected':''}">${TEAM_INFO[t]?.abbr}</span>`).join('')}
-      </div>`;
-    dpg.appendChild(card);
+  var dpg=document.getElementById('dpGrid');
+  dpg.innerHTML='';
+  Object.keys(DIVS).forEach(function(d){
+    var teams=DIVS[d];
+    var got=G.collected[d]||[];
+    var c=document.createElement('div');
+    c.className='dp-card';
+    var html='<div class="dp-div">'+d+'</div><div class="dp-fbs">';
+    teams.forEach(function(t){
+      var info=TEAMS[t];
+      var a=info?info.a:t;
+      html+='<span class="dp-fb'+(got.indexOf(t)!==-1?' got':'')+'">'+a+'</span>';
+    });
+    html+='</div>';
+    c.innerHTML=html;
+    dpg.appendChild(c);
   });
-
   // Players
-  const pEl = document.getElementById('collPlayers');
-  pEl.innerHTML = state.playerCards.length
-    ? state.playerCards.map(p => `<div class="coll-card player"><div class="coll-card-emoji">${p.emoji}</div><div class="coll-card-name">${p.name}</div><div class="coll-card-sub">${p.pos} · ${p.team}</div></div>`).join('')
-    : '<div class="empty-coll">No players yet. Complete a division!</div>';
-
+  var pe=document.getElementById('cPlayers');
+  pe.innerHTML=G.players.length?G.players.map(function(p){
+    return '<div class="c-card cp"><div class="c-card-em">'+(p.e||'🏈')+'</div><div class="c-card-nm">'+p.n+'</div><div class="c-card-sb">'+(p.p||'')+' | '+(p.t||'')+'</div></div>';
+  }).join(''):'<div class="c-empty">No players yet. Complete a division!</div>';
   // Legends
-  const lEl = document.getElementById('collLegends');
-  lEl.innerHTML = state.legendCards.length
-    ? state.legendCards.map(l => `<div class="coll-card legend"><div class="coll-card-emoji">${l.emoji}</div><div class="coll-card-name">${l.name}</div><div class="coll-card-sub">${l.team}</div></div>`).join('')
-    : '<div class="empty-coll">Collect 5 players to earn a Legend!</div>';
-
+  var le=document.getElementById('cLegends');
+  le.innerHTML=G.legends.length?G.legends.map(function(l){
+    return '<div class="c-card cl"><div class="c-card-em">'+(l.e||'🌟')+'</div><div class="c-card-nm">'+l.n+'</div><div class="c-card-sb">'+(l.t||'')+'</div></div>';
+  }).join(''):'<div class="c-empty">Earn 5 players to unlock a Legend!</div>';
   // Ultra
-  const uEl = document.getElementById('collUltra');
-  uEl.innerHTML = state.ultraCards.length
-    ? state.ultraCards.map(u => `<div class="coll-card ultra"><div class="coll-card-emoji">${u.emoji}</div><div class="coll-card-name">${u.name}</div><div class="coll-card-sub">${u.era}</div></div>`).join('')
-    : '<div class="empty-coll">Collect 10 legends to earn an Ultra Legend!</div>';
-
+  var ue=document.getElementById('cUltra');
+  ue.innerHTML=G.ultras.length?G.ultras.map(function(u){
+    return '<div class="c-card cu"><div class="c-card-em">'+(u.e||'💎')+'</div><div class="c-card-nm">'+u.n+'</div><div class="c-card-sb">'+(u.era||'')+'</div></div>';
+  }).join(''):'<div class="c-empty">Earn 10 legends to unlock an Ultra Legend!</div>';
   // Teams
-  const tEl = document.getElementById('collTeams');
-  tEl.innerHTML = state.teamCards.length
-    ? state.teamCards.map(t => `<div class="coll-card team"><div class="coll-card-emoji">${t.emoji}</div><div class="coll-card-name">${t.name}</div><div class="coll-card-sub">${t.city}</div></div>`).join('')
-    : '<div class="empty-coll">Collect 5 legends to earn a Team Card!</div>';
+  var te=document.getElementById('cTeams');
+  te.innerHTML=G.teamCards.length?G.teamCards.map(function(t){
+    return '<div class="c-card ct"><div class="c-card-em">'+(t.e||'🏆')+'</div><div class="c-card-nm">'+t.n+'</div><div class="c-card-sb">'+(t.c||'')+'</div></div>';
+  }).join(''):'<div class="c-empty">Earn 5 legends to unlock a Team Card!</div>';
 }
 
-// ════════════════════════════════════════
-// ENTER KEY SUPPORT
-// ════════════════════════════════════════
-document.getElementById('playerNameInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') startGame();
+// ==================== QR CODE ====================
+window.addEventListener('load', function(){
+  try {
+    new QRCode(document.getElementById('qrcode'),{
+      text:'https://wrcarpenter2018.github.io/nfl',
+      width:128,height:128,
+      colorDark:'#013369',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  } catch(e){ console.log('QR error',e); }
 });
 
-// ════════════════════════════════════════
-// START
-// ════════════════════════════════════════
-init();
+// Enter key support
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('nameInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter')startGame();
+  });
+});
 </script>
 </body>
 </html>
