@@ -27,6 +27,24 @@ body{font-family:Arial Black,Arial,sans-serif;background:#080818;color:#fff;min-
 .qr-label{font-size:11px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
 #qrcode canvas,#qrcode img{border:3px solid #fff;border-radius:6px}
 .qr-url-txt{font-size:10px;color:#555;margin-top:6px}
+/* Team Picker */
+.picker-label{font-size:11px;letter-spacing:3px;color:#FFB612;text-transform:uppercase;margin-bottom:9px;text-align:center;margin-top:16px}
+.team-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-bottom:4px;max-height:115px;overflow-y:auto;padding:2px}
+.team-grid::-webkit-scrollbar{width:3px}
+.team-grid::-webkit-scrollbar-thumb{background:rgba(255,182,18,.3);border-radius:2px}
+.tm-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 2px;cursor:pointer;font-family:inherit;font-size:8px;color:#999;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.2}
+.tm-btn:hover{border-color:#FFB612;color:#FFB612}
+.tm-btn.sel{border-width:2px;color:#fff;font-weight:900}
+.tm-em{font-size:13px}
+/* Difficulty */
+.diff-btns{display:flex;gap:7px;margin-bottom:14px}
+.diff-btn{flex:1;padding:9px 4px;font-size:12px;font-family:inherit;font-weight:bold;border-radius:8px;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);color:#888;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:1px}
+.diff-btn:hover{border-color:#FFB612;color:#FFB612}
+.diff-btn.easy.sel{border-color:#00ee88;color:#00ee88;background:rgba(0,238,136,.08);font-weight:900}
+.diff-btn.med.sel{border-color:#FFB612;color:#FFB612;background:rgba(255,182,18,.08);font-weight:900}
+.diff-btn.hard.sel{border-color:#ff4444;color:#ff4444;background:rgba(255,68,68,.08);font-weight:900}
+/* Fav team header badge */
+.hdr-fav{border-radius:14px;padding:3px 10px;font-size:12px;font-weight:900;border:1px solid;letter-spacing:1px}
 .how-to{margin-top:18px;background:rgba(0,0,0,.3);border-radius:8px;padding:12px;font-size:11px;color:#999;line-height:1.8}
 .how-to b{color:#FFB612}
 
@@ -166,6 +184,14 @@ body{font-family:Arial Black,Arial,sans-serif;background:#080818;color:#fff;min-
   <div class="welcome-box">
     <h2>Enter Your Name</h2>
     <input type="text" id="nameInput" placeholder="Your name..." maxlength="20" />
+    <div class="picker-label">YOUR TEAM</div>
+    <div class="team-grid" id="teamGrid"></div>
+    <div class="picker-label">DIFFICULTY</div>
+    <div class="diff-btns">
+      <button class="diff-btn easy" onclick="selectDiff('easy')">🟢 Easy</button>
+      <button class="diff-btn med sel" onclick="selectDiff('med')">🟡 Medium</button>
+      <button class="diff-btn hard" onclick="selectDiff('hard')">🔴 Hard</button>
+    </div>
     <button id="kickoffBtn" onclick="startGame()">⚡ KICK OFF ⚡</button>
     <div class="qr-wrap">
       <div class="qr-label">Scan to play on phone</div>
@@ -189,6 +215,7 @@ body{font-family:Arial Black,Arial,sans-serif;background:#080818;color:#fff;min-
     <div class="hdr-left">
       <div class="hdr-logo">🏈 NFL</div>
       <div class="hdr-name" id="hdrName">Player</div>
+      <div class="hdr-fav hidden" id="hdrFav"></div>
     </div>
     <div class="hdr-stats">
       <div class="hdr-stat"><div class="hdr-stat-v" id="sPlayers">0</div><div class="hdr-stat-l">Players</div></div>
@@ -312,198 +339,166 @@ var DIVS = {
 };
 
 var TRIVIA = {
-  Bills: [
-    "Which team plays at Highmark Stadium in Orchard Park, New York?",
-    "Josh Allen is the star quarterback for which AFC East team?",
-    "Which team lost 4 consecutive Super Bowls in the early 1990s?",
-    "Stefon Diggs played wide receiver for which team before 2024?"
-  ],
-  Dolphins: [
-    "Which team had the only perfect undefeated season in NFL history in 1972?",
-    "Dan Marino played his entire career for which team?",
-    "Which team plays at Hard Rock Stadium in Miami Gardens?",
-    "Tyreek Hill signed with which team as a free agent in 2022?"
-  ],
-  Patriots: [
-    "Tom Brady won 6 of his 7 Super Bowl rings with which team?",
-    "Which team plays at Gillette Stadium in Foxborough, Massachusetts?",
-    "Bill Belichick coached which team to 6 Super Bowl wins?",
-    "Which AFC East team is known for its dynasty in the 2000s and 2010s?"
-  ],
-  Jets: [
-    "Joe Namath guaranteed a Super Bowl win for which team in Super Bowl III?",
-    "Aaron Rodgers joined which team as quarterback in the 2023 season?",
-    "Which New York-area team is known as Gang Green and plays in green?",
-    "Which team plays its home games at MetLife Stadium in East Rutherford?"
-  ],
-  Ravens: [
-    "Lamar Jackson is the MVP quarterback for which team?",
-    "Ray Lewis played his legendary linebacker career for which team?",
-    "Which team plays at M and T Bank Stadium in Baltimore?",
-    "Ed Reed, often called the greatest safety ever, played for which team?"
-  ],
-  Bengals: [
-    "Joe Burrow led which team to Super Bowl LVI?",
-    "Ja Marr Chase plays wide receiver for which team?",
-    "Which team plays at Paycor Stadium and has the battle cry Who Dey?",
-    "Tee Higgins is a star wide receiver for which NFL team?"
-  ],
-  Browns: [
-    "Jim Brown, often called the greatest running back ever, played for which team?",
-    "Which team plays at Huntington Bank Field in Cleveland, Ohio?",
-    "Nick Chubb was one of the top running backs for which franchise?",
-    "Which team's fans are known for cheering in the famous Dawg Pound section?"
-  ],
-  Steelers: [
-    "T.J. Watt won NFL Defensive Player of the Year playing for which team?",
-    "Which team plays at Acrisure Stadium in Pittsburgh and has 6 Super Bowl wins?",
-    "The Terrible Towel tradition is associated with fans of which team?",
-    "Which team's dominant Steel Curtain defense won four Super Bowls in the 1970s?"
-  ],
-  Texans: [
-    "C.J. Stroud had a breakout rookie season as quarterback for which team?",
-    "J.J. Watt won three NFL Defensive Player of the Year awards for which team?",
-    "Which team plays at NRG Stadium in Houston, Texas?",
-    "Which AFC South team was established in 2002 making it one of the newest franchises?"
-  ],
-  Colts: [
-    "Peyton Manning played 14 seasons and is most associated with which team?",
-    "Which team plays at Lucas Oil Stadium in Indianapolis?",
-    "The blue horseshoe logo represents which NFL team?",
-    "Jonathan Taylor won the NFL rushing title playing for which team?"
-  ],
-  Jaguars: [
-    "Trevor Lawrence is the franchise quarterback for which team?",
-    "Which team plays at EverBank Stadium in Jacksonville, Florida?",
-    "Which AFC South team made the playoffs in 2022 under coach Doug Pederson?",
-    "Josh Allen the pass rusher plays for which AFC South franchise?"
-  ],
-  Titans: [
-    "Which team plays at Nissan Stadium in Nashville, Tennessee?",
-    "Derrick Henry set rushing records before leaving which team?",
-    "Will Levis became the starting quarterback for which team?",
-    "Which franchise relocated from Houston to Tennessee in 1997?"
-  ],
-  Broncos: [
-    "John Elway won back to back Super Bowls as quarterback for which team?",
-    "Which team plays at Empower Field at Mile High in Denver, Colorado?",
-    "Bo Nix was drafted to be the starting quarterback for which team?",
-    "Which team won Super Bowl 50 with Peyton Manning at quarterback?"
-  ],
-  Chiefs: [
-    "Patrick Mahomes has won multiple Super Bowls as quarterback for which team?",
-    "Which team plays at Arrowhead Stadium in Kansas City?",
-    "Travis Kelce, considered the greatest tight end ever, plays for which team?",
-    "Which team won back to back Super Bowls in 2023 and 2024?"
-  ],
-  Raiders: [
-    "Which team relocated from Oakland to Las Vegas and opened Allegiant Stadium in 2020?",
-    "Maxx Crosby is an elite pass rusher for which team?",
-    "Which NFL team wears silver and black as its signature colors?",
-    "Davante Adams played for which team after leaving the Packers?"
-  ],
-  Chargers: [
-    "Justin Herbert is the talented young quarterback for which team?",
-    "Which team plays at SoFi Stadium but is not the Rams?",
-    "Keenan Allen spent most of his career as a wide receiver for which team?",
-    "Jim Harbaugh left his coaching job at Michigan to coach which NFL team?"
-  ],
-  Cowboys: [
-    "Which team is nicknamed America's Team and plays in Dallas?",
-    "Dak Prescott is the starting quarterback for which team?",
-    "Which team plays at AT&T Stadium in Arlington, Texas?",
-    "CeeDee Lamb is considered one of the best wide receivers for which team?"
-  ],
-  Giants: [
-    "Lawrence Taylor, called the greatest defensive player in history, played for which team?",
-    "Eli Manning won two Super Bowls over the Patriots playing for which team?",
-    "Which team plays at MetLife Stadium and wears blue and red colors?",
-    "Saquon Barkley starred as a running back for which team before moving to Philadelphia?"
-  ],
-  Eagles: [
-    "Jalen Hurts is the dual threat quarterback for which team?",
-    "Which team won Super Bowl LII, upsetting the heavily favored New England Patriots?",
-    "Which team plays at Lincoln Financial Field in Philadelphia?",
-    "A.J. Brown plays wide receiver for which NFC East franchise?"
-  ],
-  Commanders: [
-    "Jayden Daniels won NFL Offensive Rookie of the Year playing for which team?",
-    "Which team plays at Northwest Stadium in the Washington D.C. area?",
-    "Which team was formerly known as the Redskins and then the Football Team?",
-    "Terry McLaurin is the star wide receiver for which NFC East team?"
-  ],
-  Bears: [
-    "Caleb Williams was selected number one overall in the 2024 NFL Draft by which team?",
-    "Walter Payton, nicknamed Sweetness, played his legendary career for which team?",
-    "Which team plays at Soldier Field in Chicago, Illinois?",
-    "Which team is considered one of the founding NFL franchises dating back to 1919?"
-  ],
-  Lions: [
-    "Jared Goff has led which team to their best seasons in recent history?",
-    "Barry Sanders, famous for his elusive running style, played for which team?",
-    "Which team plays at Ford Field in Detroit, Michigan?",
-    "Amon Ra St. Brown is the reliable slot wide receiver for which team?"
-  ],
-  Packers: [
-    "Jordan Love became the starting quarterback for which team after Aaron Rodgers left?",
-    "Which team plays home games at the historic Lambeau Field in Green Bay?",
-    "Vince Lombardi won five NFL championships as the head coach of which team?",
-    "Which team is uniquely owned by the community and fans as a nonprofit organization?"
-  ],
-  Vikings: [
-    "Justin Jefferson, widely considered the best receiver in football, plays for which team?",
-    "Which team plays at U.S. Bank Stadium in Minneapolis, Minnesota?",
-    "Adrian Peterson set the single season rushing record of 2097 yards for which team?",
-    "J.J. McCarthy was drafted by which team to be their quarterback of the future?"
-  ],
-  Falcons: [
-    "Kirk Cousins signed with which team as their quarterback in the 2024 offseason?",
-    "Which team plays at Mercedes Benz Stadium in Atlanta, Georgia?",
-    "Julio Jones played his best seasons at wide receiver for which team?",
-    "Bijan Robinson is the exciting young running back for which NFC South team?"
-  ],
-  Panthers: [
-    "Bryce Young was selected first overall in the 2023 NFL Draft by which team?",
-    "Which team plays at Bank of America Stadium in Charlotte, North Carolina?",
-    "Steve Smith Sr. spent most of his Hall of Fame receiving career with which team?",
-    "Which team represents both North and South Carolina in the NFL?"
-  ],
-  Saints: [
-    "Drew Brees won Super Bowl XLIV and rebuilt which city after Hurricane Katrina?",
-    "Which team plays at Caesars Superdome in New Orleans, Louisiana?",
-    "Derek Carr signed as a free agent to be quarterback for which team in 2023?",
-    "Which team is famous for its passionate fans known as the Who Dat Nation?"
-  ],
-  Buccaneers: [
-    "Tom Brady won Super Bowl LV in his first season with which team?",
-    "Which team plays at Raymond James Stadium in Tampa Bay, Florida?",
-    "Baker Mayfield won NFL Comeback Player of the Year playing for which team?",
-    "Mike Evans has spent his entire wide receiver career with which franchise?"
-  ],
-  Cardinals: [
-    "Kyler Murray is the scrambling quarterback for which team?",
-    "Which team plays at State Farm Stadium in Glendale, Arizona?",
-    "DeAndre Hopkins made his famous Hail Murray catch for which team?",
-    "Which NFL franchise claims to be the oldest continuously operating team in the league?"
-  ],
-  Rams: [
-    "Matthew Stafford won Super Bowl LVI as quarterback for which team?",
-    "Which team plays at SoFi Stadium in Inglewood, California?",
-    "Cooper Kupp won the receiving Triple Crown while playing for which team?",
-    "Which team relocated from St. Louis back to Los Angeles in 2016?"
-  ],
-  Niners: [
-    "Brock Purdy went from the last pick in the 2022 draft to leading which team to the Super Bowl?",
-    "Jerry Rice, widely considered the greatest receiver ever, played for which team?",
-    "Which team plays at Levi Stadium in Santa Clara, California?",
-    "Christian McCaffrey is the versatile all purpose running back for which team?"
-  ],
-  Seahawks: [
-    "Geno Smith had a career revival and led which team to the playoffs?",
-    "Russell Wilson spent the first ten seasons of his career with which team?",
-    "Which team plays at Lumen Field in Seattle, Washington?",
-    "Pete Carroll coached which team for over a decade including a Super Bowl win in 2014?"
-  ]
+  Bills: {
+    easy: ["Which team plays at Highmark Stadium in Orchard Park, New York?","Josh Allen is the star quarterback for which AFC East team?","Which team lost 4 consecutive Super Bowls in the early 1990s?","Stefon Diggs played wide receiver for which team before 2024?"],
+    med:  ["Jim Kelly led which team to four consecutive Super Bowl appearances?","The famous comeback from 32 points down against the Oilers happened for which team in 1993?","Thurman Thomas won the 1991 NFL MVP award playing for which team?","Andre Reed spent his Hall of Fame wide receiver career primarily with which team?"],
+    hard: ["Marv Levy coached which team to four straight Super Bowl appearances from 1991 to 1994?","Scott Norwood's infamous wide right miss in Super Bowl XXV was kicked for which team?","Which team drafted Hall of Fame pass rusher Bruce Smith with the first overall pick in 1985?","Don Beebe was a wide receiver on four straight Super Bowl teams for which franchise?"]
+  },
+  Dolphins: {
+    easy: ["Which team had the only perfect undefeated season in NFL history in 1972?","Dan Marino played his entire career for which team?","Which team plays at Hard Rock Stadium in Miami Gardens?","Tyreek Hill signed with which team as a free agent in 2022?"],
+    med:  ["Don Shula coached which team to the only perfect 17-0 season in NFL history?","Larry Csonka won the Super Bowl VIII MVP running the ball for which team?","Bob Griese led which team to back-to-back Super Bowls in 1973 and 1974?","Paul Warfield was an elite wide receiver during the dynasty years of which team?"],
+    hard: ["Mercury Morris and Larry Csonka both rushed for over 1000 yards in 1972 for which team?","Dan Marino set the single-season passing yards record of 5084 yards in 1984 for which team?","Don Shula's record of 347 career coaching wins was set primarily with which franchise?","Which team defeated the Minnesota Vikings in Super Bowl VIII at Rice Stadium in Houston?"]
+  },
+  Patriots: {
+    easy: ["Tom Brady won 6 of his 7 Super Bowl rings with which team?","Which team plays at Gillette Stadium in Foxborough, Massachusetts?","Bill Belichick coached which team to 6 Super Bowl wins?","Which AFC East team is known for its dynasty in the 2000s and 2010s?"],
+    med:  ["Malcolm Butler's Super Bowl XLIX interception sealed the championship for which team?","Rob Gronkowski set the tight end receiving touchdown record playing for which team?","Drew Bledsoe was the franchise quarterback before Tom Brady took over for which team?","Tedy Bruschi overcame a stroke to continue his linebacker career for which team?"],
+    hard: ["Adam Vinatieri kicked the game-winning field goal in Super Bowl XXXVI for which team?","Randy Moss caught a then-record 23 touchdown passes in a single season for which team?","Which team went 16-0 in the 2007 regular season before losing the Super Bowl to the Giants?","The Tuck Rule Game in the 2001 playoffs helped advance which team toward their first championship?"]
+  },
+  Jets: {
+    easy: ["Joe Namath guaranteed a Super Bowl win for which team in Super Bowl III?","Aaron Rodgers joined which team as quarterback in the 2023 season?","Which New York-area team is known as Gang Green and plays in green?","Which team plays its home games at MetLife Stadium in East Rutherford?"],
+    med:  ["Joe Namath won Super Bowl III MVP as quarterback for which team?","Curtis Martin won the 2004 NFL rushing title playing for which team?","Darrelle Revis was considered the best cornerback in football for which team?","Vinny Testaverde had his best career seasons as quarterback for which team?"],
+    hard: ["Which team was the first AFL franchise to defeat an NFL team in the Super Bowl?","Herm Edwards' famous you play to win the game speech was given as head coach of which team?","Leon Hess owned which NFL team until his death in 1999?","Which team selected defensive tackle Quinnen Williams third overall in the 2019 NFL Draft?"]
+  },
+  Ravens: {
+    easy: ["Lamar Jackson is the MVP quarterback for which team?","Ray Lewis played his legendary linebacker career for which team?","Which team plays at M and T Bank Stadium in Baltimore?","Ed Reed, often called the greatest safety ever, played for which team?"],
+    med:  ["Ray Lewis won the Super Bowl XXXV MVP playing linebacker for which team?","Ed Reed won the 2004 NFL Defensive Player of the Year playing for which team?","Anquan Boldin had a dominant Super Bowl performance in 2013 playing for which team?","Jonathan Ogden was the first Hall of Fame inductee as an offensive tackle for which team?"],
+    hard: ["Ozzie Newsome became the first Black general manager in NFL history with which team?","Jacoby Jones returned a kickoff 108 yards for a touchdown in Super Bowl XLVII for which team?","Art Modell controversially relocated the Browns from Cleveland to form which new franchise?","Brian Billick coached which team to their first Super Bowl championship in Super Bowl XXXV?"]
+  },
+  Bengals: {
+    easy: ["Joe Burrow led which team to Super Bowl LVI?","Ja Marr Chase plays wide receiver for which team?","Which team plays at Paycor Stadium and has the battle cry Who Dey?","Tee Higgins is a star wide receiver for which NFL team?"],
+    med:  ["Boomer Esiason won the 1988 NFL MVP award as quarterback for which team?","Cris Collinsworth starred as a wide receiver for which team before becoming a broadcaster?","Chad Johnson renamed himself Ochocinco while playing wide receiver for which team?","A.J. Green spent the first ten seasons of his career as a wide receiver for which team?"],
+    hard: ["Anthony Munoz is considered the greatest offensive lineman in history and played for which team?","Paul Brown founded which NFL team that now uses his initials as part of their identity?","Ickey Woods performed his famous Ickey Shuffle touchdown celebration for which team?","Which team lost Super Bowl XVI and Super Bowl XXIII both to the San Francisco 49ers?"]
+  },
+  Browns: {
+    easy: ["Jim Brown, often called the greatest running back ever, played for which team?","Which team plays at Huntington Bank Field in Cleveland, Ohio?","Nick Chubb was one of the top running backs for which franchise?","Which team's fans are known for cheering in the famous Dawg Pound section?"],
+    med:  ["Otto Graham led which team to 10 championship game appearances in his 10-year career?","Bernie Kosar grew up a fan of which team before becoming their franchise quarterback?","Ozzie Newsome played tight end for which team before becoming a legendary general manager?","Leroy Kelly won back-to-back rushing titles in 1967 and 1968 for which team?"],
+    hard: ["Paul Brown founded and coached which franchise before being fired by owner Art Modell?","Lou Groza known as The Toe was a legendary placekicker for which franchise?","The Cleveland franchise relocated to Baltimore in 1996 and then returned as an expansion team for which city?","Jim Brown averaged over 100 rushing yards per game throughout his career for which team?"]
+  },
+  Steelers: {
+    easy: ["T.J. Watt won NFL Defensive Player of the Year playing for which team?","Which team plays at Acrisure Stadium in Pittsburgh and has 6 Super Bowl wins?","The Terrible Towel tradition is associated with fans of which team?","Which team's dominant Steel Curtain defense won four Super Bowls in the 1970s?"],
+    med:  ["The Immaculate Reception by Franco Harris in 1972 is considered the greatest play in history for which team?","Mean Joe Greene anchored the Steel Curtain defense of which team in the 1970s?","Lynn Swann won the Super Bowl X MVP catching passes for which team?","Mike Webster played center for which team and was the first player diagnosed with CTE?"],
+    hard: ["Chuck Noll coached which team to four Super Bowls in six seasons during the 1970s?","Jack Lambert played middle linebacker for which team's Steel Curtain defense that won four rings?","Terry Bradshaw won four Super Bowl rings as quarterback for which team in the 1970s?","The Immaculate Reception play against the Raiders occurred in a 1972 playoff game for which team?"]
+  },
+  Texans: {
+    easy: ["C.J. Stroud had a breakout rookie season as quarterback for which team?","J.J. Watt won three NFL Defensive Player of the Year awards for which team?","Which team plays at NRG Stadium in Houston, Texas?","Which AFC South team was established in 2002 making it one of the newest franchises?"],
+    med:  ["Andre Johnson was the elite wide receiver during the early years of which expansion team?","Arian Foster rushed for over 1000 yards in four straight seasons for which team?","Gary Kubiak coached which team to their first playoff wins in franchise history?","DeAndre Hopkins made spectacular catches for which team before being traded in 2020?"],
+    hard: ["David Carr was the first overall pick in the very first expansion draft for which brand new 2002 franchise?","Bob McNair founded which NFL expansion team in Houston in 2002?","Which team has never appeared in a Super Bowl since joining the NFL as an expansion franchise?","Which team shares its city with the Houston Astros and Houston Rockets in the same stadium complex?"]
+  },
+  Colts: {
+    easy: ["Peyton Manning played 14 seasons and is most associated with which team?","Which team plays at Lucas Oil Stadium in Indianapolis?","The blue horseshoe logo represents which NFL team?","Jonathan Taylor won the NFL rushing title playing for which team?"],
+    med:  ["Johnny Unitas threw for 40239 yards over his career mostly for which franchise?","Marvin Harrison set a single-season record of 143 receptions in 2002 for which team?","Edgerrin James won two rushing titles in his first two seasons for which team?","Tony Dungy became the first Black head coach to win a Super Bowl leading which team?"],
+    hard: ["The Baltimore Colts moved to Indianapolis in 1984 under the cover of darkness becoming which team?","Art Donovan played nose tackle for the championship teams of the 1950s for which franchise?","Bert Jones was considered the most talented quarterback in football in 1976 for which team?","Which team's owner Robert Irsay secretly moved the franchise to Indiana using Mayflower moving trucks?"]
+  },
+  Jaguars: {
+    easy: ["Trevor Lawrence is the franchise quarterback for which team?","Which team plays at EverBank Stadium in Jacksonville, Florida?","Which AFC South team made the playoffs in 2022 under coach Doug Pederson?","Josh Allen the pass rusher plays for which AFC South franchise?"],
+    med:  ["Mark Brunell threw for over 4000 yards in 1996 in his breakout year for which expansion team?","Fred Taylor rushed for over 1000 yards multiple times in his career for which team?","Tom Coughlin was the founding head coach of which NFL expansion team in 1995?","Tony Boselli was a dominant offensive tackle in the early years of which franchise?"],
+    hard: ["Which team made the AFC Championship Game in just their second year of existence in 1996?","Jimmy Smith caught over 800 career passes in his Hall of Fame worthy career for which team?","Which team was founded in 1995 alongside the Carolina Panthers as two expansion franchises?","Which team shocked the Buffalo Bills in the 1996 wild card game in their first playoff season?"]
+  },
+  Titans: {
+    easy: ["Which team plays at Nissan Stadium in Nashville, Tennessee?","Derrick Henry set rushing records before leaving which team?","Will Levis became the starting quarterback for which team?","Which franchise relocated from Houston to Tennessee in 1997?"],
+    med:  ["Steve McNair won the co-MVP award in 2003 as quarterback for which team?","Eddie George won the Offensive Rookie of the Year award for which team in 1996?","Jeff Fisher coached which team for 17 seasons from 1994 to 2010?","The Music City Miracle lateral touchdown play saved which team's playoff run in 2000?"],
+    hard: ["Warren Moon played quarterback for which team when they were the Houston Oilers?","Earl Campbell won three consecutive rushing titles in the late 1970s for which franchise?","Bum Phillips wore his trademark cowboy hat while coaching which team?","Which team played as the Tennessee Oilers for two seasons before officially rebranding?"]
+  },
+  Broncos: {
+    easy: ["John Elway won back to back Super Bowls as quarterback for which team?","Which team plays at Empower Field at Mile High in Denver, Colorado?","Bo Nix was drafted to be the starting quarterback for which team?","Which team won Super Bowl 50 with Peyton Manning at quarterback?"],
+    med:  ["Terrell Davis ran for 2008 yards and won the 1997 Super Bowl MVP for which team?","Shannon Sharpe was a Hall of Fame tight end who spent most of his career for which team?","Mike Shanahan coached which team to back-to-back Super Bowls in 1998 and 1999?","Rod Smith was an undrafted receiver who became a Pro Bowl star for which team?"],
+    hard: ["The Drive in the 1986 AFC Championship was John Elway leading which team 98 yards to tie the game?","Floyd Little was the first player to have his number retired by which franchise?","The Denver Orange Crush defense dominated opponents in the 1977 Super Bowl season for which team?","Craig Morton was the quarterback who led which team to their first Super Bowl appearance in Super Bowl XII?"]
+  },
+  Chiefs: {
+    easy: ["Patrick Mahomes has won multiple Super Bowls as quarterback for which team?","Which team plays at Arrowhead Stadium in Kansas City?","Travis Kelce, considered the greatest tight end ever, plays for which team?","Which team won back to back Super Bowls in 2023 and 2024?"],
+    med:  ["Len Dawson won the Super Bowl IV MVP as quarterback for which team?","Tony Gonzalez caught 1325 passes over his Hall of Fame career mostly for which team?","Priest Holmes rushed for a record 27 touchdowns in a season for which team?","Marcus Allen won the Super Bowl XVIII MVP and later starred for which team?"],
+    hard: ["Derrick Thomas set an NFL record with 7 sacks in a single game playing for which team?","Hank Stram coached which team to the AFL-NFL merger era championship in Super Bowl IV?","Christian Okoye was known as the Nigerian Nightmare running back for which team?","The AFL's Dallas Texans relocated to Missouri and became which current NFL franchise?"]
+  },
+  Raiders: {
+    easy: ["Which team relocated from Oakland to Las Vegas and opened Allegiant Stadium in 2020?","Maxx Crosby is an elite pass rusher for which team?","Which NFL team wears silver and black as its signature colors?","Davante Adams played for which team after leaving the Packers?"],
+    med:  ["Ken Stabler won the 1974 MVP and led which team to a Super Bowl championship?","John Madden coached which team without ever having a losing season during his tenure?","Bo Jackson had one of the most famous Monday Night Football runs for which team?","Tim Brown caught over 1000 receptions during his Hall of Fame career for which team?"],
+    hard: ["John Madden coached which team to Super Bowl XI with a perfect 13-1 regular season?","George Blanda played quarterback and kicker until age 48 for which team?","Ted Hendricks won four Super Bowl rings playing linebacker for which franchise?","Which team's fans still claim the Immaculate Reception was an incomplete pass against them in 1972?"]
+  },
+  Chargers: {
+    easy: ["Justin Herbert is the talented young quarterback for which team?","Which team plays at SoFi Stadium but is not the Rams?","Keenan Allen spent most of his career as a wide receiver for which team?","Jim Harbaugh left his coaching job at Michigan to coach which NFL team?"],
+    med:  ["LaDainian Tomlinson set the single season rushing touchdown record of 28 in 2006 for which team?","Dan Fouts threw for over 4000 yards multiple times under coach Don Coryell for which team?","Lance Alworth was the first AFL player to be inducted into the Pro Football Hall of Fame for which team?","Antonio Gates played tight end without ever playing college football and starred for which team?"],
+    hard: ["Don Coryell's Air Coryell offense revolutionized the passing game for which team in the early 1980s?","Junior Seau played linebacker for which team for 13 seasons before his tragic death?","The 1963 AFL championship was won by which team over the Boston Patriots?","Gary Plummer and Leslie O'Neal anchored the defense for which team during the 1994 Super Bowl run?"]
+  },
+  Cowboys: {
+    easy: ["Which team is nicknamed America's Team and plays in Dallas?","Dak Prescott is the starting quarterback for which team?","Which team plays at AT&T Stadium in Arlington, Texas?","CeeDee Lamb is considered one of the best wide receivers for which team?"],
+    med:  ["Troy Aikman won three Super Bowls as quarterback for which team?","Emmitt Smith won three Super Bowls and the all-time rushing record for which team?","Michael Irvin caught passes alongside Aikman and Smith in the Triplets for which team?","Roger Staubach threw the first famous Hail Mary touchdown pass in playoff history for which team?"],
+    hard: ["Tom Landry coached which team for 29 seasons as the only head coach in franchise history?","Too Tall Jones was a dominant defensive end for which team throughout the 1970s and 1980s?","Tex Schramm was the president who built the dynasty years for which franchise?","Bullet Bob Hayes ran track in the 1964 Olympics before becoming a wide receiver for which team?"]
+  },
+  Giants: {
+    easy: ["Lawrence Taylor, called the greatest defensive player in history, played for which team?","Eli Manning won two Super Bowls over the Patriots playing for which team?","Which team plays at MetLife Stadium and wears blue and red colors?","Saquon Barkley starred as a running back for which team before moving to Philadelphia?"],
+    med:  ["Phil Simms completed 22 of 25 passes setting a Super Bowl completion record for which team?","Michael Strahan set the single season sack record of 22.5 in 2001 for which team?","Mark Bavaro was a bruising tight end during the Super Bowl era of which team?","Tiki Barber had three consecutive 1500-yard rushing seasons for which team?"],
+    hard: ["Y.A. Tittle set a passing touchdown record in 1963 playing quarterback for which team?","Pat Summerall kicked a controversial field goal in the snow to send which team to the 1958 championship?","Lawrence Taylor's pass rushing performance against the Bears in 1985 playoffs was legendary for which team?","Chuck Bednarik made his famous tackle on Frank Gifford playing for which team?"]
+  },
+  Eagles: {
+    easy: ["Jalen Hurts is the dual threat quarterback for which team?","Which team won Super Bowl LII, upsetting the heavily favored New England Patriots?","Which team plays at Lincoln Financial Field in Philadelphia?","A.J. Brown plays wide receiver for which NFC East franchise?"],
+    med:  ["Randall Cunningham was considered the first great scrambling quarterback in the league for which team?","Donovan McNabb led which team to four straight NFC Championship games?","Brian Dawkins was an elite safety and team captain for over a decade for which team?","Harold Carmichael caught at least one pass in 127 consecutive games for which team?"],
+    hard: ["Chuck Bednarik played both center and linebacker as the last true 60-minute player for which team?","Dick Vermeil came out of retirement and led which team to the Super Bowl in 1980?","Tommy McDonald was a smallish Hall of Fame receiver who starred for which team?","Wilbert Montgomery rushed for 194 yards in the NFC Championship to send which team to the Super Bowl?"]
+  },
+  Commanders: {
+    easy: ["Jayden Daniels won NFL Offensive Rookie of the Year playing for which team?","Which team plays at Northwest Stadium in the Washington D.C. area?","Which team was formerly known as the Redskins and then the Football Team?","Terry McLaurin is the star wide receiver for which NFC East team?"],
+    med:  ["Joe Theismann won Super Bowl XVII as quarterback for which team?","Art Monk caught 106 passes in 1984 setting a single-season record for which team?","Darrell Green played cornerback for 20 seasons for which franchise?","Joe Gibbs won 3 Super Bowls with 3 different running backs for which team?"],
+    hard: ["John Riggins rushed for 166 yards in Super Bowl XVII earning MVP honors for which team?","Sammy Baugh was the greatest player of the pre-war NFL era playing for which franchise?","The Hogs offensive line was famous for leading the ground game for which team in the 1980s?","Bobby Mitchell was one of the first Black players to integrate which NFL franchise?"]
+  },
+  Bears: {
+    easy: ["Caleb Williams was selected number one overall in the 2024 NFL Draft by which team?","Walter Payton, nicknamed Sweetness, played his legendary career for which team?","Which team plays at Soldier Field in Chicago, Illinois?","Which team is considered one of the founding NFL franchises dating back to 1919?"],
+    med:  ["Mike Ditka won a Super Bowl as both a player and a head coach for which team?","Dick Butkus is considered the most intimidating linebacker in football history for which team?","Gale Sayers scored 6 touchdowns in a single game in 1965 for which team?","The Monsters of the Midway nickname belongs to which NFL franchise?"],
+    hard: ["George Halas founded which NFL franchise and coached them to six league championships?","Sid Luckman threw seven touchdowns in a single game in 1943 for which team?","The 1940 NFL Championship game won 73-0 is the most lopsided in history — which team won it?","The Super Bowl Shuffle rap song was recorded by players of which team before winning Super Bowl XX?"]
+  },
+  Lions: {
+    easy: ["Jared Goff has led which team to their best seasons in recent history?","Barry Sanders, famous for his elusive running style, played for which team?","Which team plays at Ford Field in Detroit, Michigan?","Amon Ra St. Brown is the reliable slot wide receiver for which team?"],
+    med:  ["Barry Sanders rushed for 2053 yards in 1997 for which team before retiring early?","Calvin Megatron Johnson caught 122 passes for 1964 yards in 2012 for which team?","Herman Moore caught 123 passes in 1995 setting a single season record for which team?","Bobby Layne quarterbacked which team to back-to-back championships in 1952 and 1953?"],
+    hard: ["Dutch Clark was the first star player and head coach of which NFL franchise?","Night Train Lane intercepted 14 passes in a single season for which team in 1952?","Which team infamously went 0-16 in the 2008 season without winning a single game?","Bobby Layne allegedly placed a curse on which team when he was traded away in 1958?"]
+  },
+  Packers: {
+    easy: ["Jordan Love became the starting quarterback for which team after Aaron Rodgers left?","Which team plays home games at the historic Lambeau Field in Green Bay?","Vince Lombardi won five NFL championships as the head coach of which team?","Which team is uniquely owned by the community and fans as a nonprofit organization?"],
+    med:  ["Brett Favre won three consecutive MVP awards from 1995 to 1997 for which team?","Reggie White recorded 68.5 sacks in six seasons after signing with which team?","Paul Hornung won the 1961 NFL MVP scoring a record 176 points for which team?","Don Hutson dominated receiving statistics in the 1930s and 1940s for which team?"],
+    hard: ["The Ice Bowl played at minus 13 degrees in 1967 was won by which team over the Cowboys?","Curly Lambeau founded which NFL franchise that now bears his name on the stadium?","The first two Super Bowls in 1967 and 1968 were won by which team under Vince Lombardi?","Don Hutson's single-season touchdown reception record of 17 stood for decades — which team?"]
+  },
+  Vikings: {
+    easy: ["Justin Jefferson, widely considered the best receiver in football, plays for which team?","Which team plays at U.S. Bank Stadium in Minneapolis, Minnesota?","Adrian Peterson set the single season rushing record of 2097 yards for which team?","J.J. McCarthy was drafted by which team to be their quarterback of the future?"],
+    med:  ["Fran Tarkenton scrambled for most of his career rushing yards among quarterbacks for which team?","Randy Moss caught 17 touchdown passes in his spectacular 1998 rookie season for which team?","Carl Eller and Alan Page anchored the Purple People Eaters defense for which team?","Cris Carter caught 122 passes in 1994 to set a receiving record for which team?"],
+    hard: ["Which team appeared in four Super Bowls in the 1970s without winning any of them?","Bud Grant coached which team to four Super Bowl appearances in eight seasons?","Chuck Foreman was the versatile running back for which team during their 1970s Super Bowl runs?","John Randle was an undrafted defensive tackle who made the Hall of Fame playing for which team?"]
+  },
+  Falcons: {
+    easy: ["Kirk Cousins signed with which team as their quarterback in the 2024 offseason?","Which team plays at Mercedes Benz Stadium in Atlanta, Georgia?","Julio Jones played his best seasons at wide receiver for which team?","Bijan Robinson is the exciting young running back for which NFC South team?"],
+    med:  ["Michael Vick became the first quarterback to rush for over 1000 yards in a season for which team?","Matt Ryan threw for over 5000 yards and won the MVP award in 2016 for which team?","Julio Jones caught 1836 yards in 2015 setting a franchise record for which team?","Deion Sanders played cornerback early in his Hall of Fame career for which team?"],
+    hard: ["Which team blew a 28-3 lead in Super Bowl LI against the New England Patriots?","Tommy Nobis was drafted first overall in 1966 as the original defensive star for which expansion team?","The Falcons were purchased by Arthur Blank the Home Depot co-founder — which team?","Dan Reeves coached which team to a Super Bowl appearance in the 1998 season?"]
+  },
+  Panthers: {
+    easy: ["Bryce Young was selected first overall in the 2023 NFL Draft by which team?","Which team plays at Bank of America Stadium in Charlotte, North Carolina?","Steve Smith Sr. spent most of his Hall of Fame receiving career with which team?","Which team represents both North and South Carolina in the NFL?"],
+    med:  ["Cam Newton won the 2015 NFL MVP award as quarterback for which team?","Luke Kuechly won the 2013 Defensive Player of the Year award for which team?","Steve Smith Sr. caught 103 passes in 2005 for which team?","Ron Rivera coached which team to the Super Bowl in the 2015 season?"],
+    hard: ["Which expansion team made the NFC Championship Game in just their second year of existence in 1996?","Julius Peppers won the Defensive Rookie of the Year award in 2002 for which team?","Jake Delhomme led which team to Super Bowl XXXVIII against the Patriots?","Kevin Greene recorded 14.5 sacks in a single season playing for which team?"]
+  },
+  Saints: {
+    easy: ["Drew Brees won Super Bowl XLIV and rebuilt which city after Hurricane Katrina?","Which team plays at Caesars Superdome in New Orleans, Louisiana?","Derek Carr signed as a free agent to be quarterback for which team in 2023?","Which team is famous for its passionate fans known as the Who Dat Nation?"],
+    med:  ["Drew Brees broke the all-time NFL passing yards record while playing for which team?","Deuce McAllister rushed for over 1000 yards in both 2002 and 2003 for which team?","Sean Payton coached which team to their only Super Bowl championship?","Ricky Williams was traded for an entire draft class when he joined which team?"],
+    hard: ["Hurricane Katrina in 2005 forced which NFL team to play home games in other cities?","Archie Manning played most of his career without any postseason success for which team?","The Bountygate scandal involving bounties placed on opposing players involved which team in 2012?","Reggie Bush won the 2006 Offensive Rookie of the Year award before controversy for which team?"]
+  },
+  Buccaneers: {
+    easy: ["Tom Brady won Super Bowl LV in his first season with which team?","Which team plays at Raymond James Stadium in Tampa Bay, Florida?","Baker Mayfield won NFL Comeback Player of the Year playing for which team?","Mike Evans has spent his entire wide receiver career with which franchise?"],
+    med:  ["Warren Sapp won the 1999 NFL Defensive Player of the Year award for which team?","Derrick Brooks was a Hall of Fame linebacker for which team for 14 seasons?","Jon Gruden returned to coaching and led which team to their second Super Bowl?","Ronde Barber intercepted 47 passes over his entire career for which team?"],
+    hard: ["Which team won Super Bowl XXXVII against the Oakland Raiders coached by their former head coach Jon Gruden?","Doug Williams became the first Black quarterback to win a Super Bowl for which team?","John McKay was the founding head coach of which expansion team in 1976?","James Wilder rushed for over 1500 yards and caught over 80 passes for which team in 1984?"]
+  },
+  Cardinals: {
+    easy: ["Kyler Murray is the scrambling quarterback for which team?","Which team plays at State Farm Stadium in Glendale, Arizona?","DeAndre Hopkins made his famous Hail Murray catch for which team?","Which NFL franchise claims to be the oldest continuously operating team in the league?"],
+    med:  ["Kurt Warner led which team to the Super Bowl after being an undrafted former grocery store clerk?","Larry Fitzgerald caught 100 passes for 1431 yards in the Super Bowl run season for which team?","Aeneas Williams intercepted 71 passes over his career for which team?","Adrian Wilson was a hard-hitting Pro Bowl safety for which team for 12 seasons?"],
+    hard: ["Pat Tillman famously gave up an NFL contract to join the military from which team?","Charley Trippi played in the last NFL title game before the Super Bowl era for which team?","Which franchise claims to date back to 1898 making it the oldest in professional football?","Neil Lomax threw for over 4000 yards in both 1984 and 1987 as quarterback for which team?"]
+  },
+  Rams: {
+    easy: ["Matthew Stafford won Super Bowl LVI as quarterback for which team?","Which team plays at SoFi Stadium in Inglewood, California?","Cooper Kupp won the receiving Triple Crown while playing for which team?","Which team relocated from St. Louis back to Los Angeles in 2016?"],
+    med:  ["Eric Dickerson set the single season rushing record of 2105 yards in 1984 for which team?","Marshall Faulk won three consecutive rushing titles and an MVP award for which team?","Isaac Bruce and Torry Holt were the elite wide receiver duo during the Greatest Show on Turf for which team?","Kurt Warner came from nowhere to win two MVPs and a Super Bowl for which team?"],
+    hard: ["The Greatest Show on Turf offense of 1999 averaged over 32 points per game for which team?","Chuck Knox coached which team to three straight NFC Championship game appearances in the 1970s?","Roman Gabriel won the 1969 NFL MVP award as quarterback for which team?","Which team has relocated from Cleveland to Los Angeles to St. Louis and back to Los Angeles?"]
+  },
+  Niners: {
+    easy: ["Brock Purdy went from the last pick in the 2022 draft to leading which team to the Super Bowl?","Jerry Rice, widely considered the greatest receiver ever, played for which team?","Which team plays at Levi Stadium in Santa Clara, California?","Christian McCaffrey is the versatile all purpose running back for which team?"],
+    med:  ["Joe Montana won four Super Bowls without throwing a single interception in Super Bowl games for which team?","Steve Young had a passer rating of 112.8 in 1994 setting an NFL record for which team?","Ronnie Lott cut off his own pinky finger rather than miss games playing safety for which team?","Roger Craig was the first player to rush and receive for 1000 yards in the same season for which team?"],
+    hard: ["Bill Walsh invented the West Coast Offense while coaching which team to three Super Bowls?","The Catch by Dwight Clark in the 1981 NFC Championship game beat the Cowboys for which team?","Which team won five Super Bowls in fourteen years from 1982 to 1995?","Hugh McElhenny was called The King and was one of the original franchise stars for which team?"]
+  },
+  Seahawks: {
+    easy: ["Geno Smith had a career revival and led which team to the playoffs?","Russell Wilson spent the first ten seasons of his career with which team?","Which team plays at Lumen Field in Seattle, Washington?","Pete Carroll coached which team for over a decade including a Super Bowl win in 2014?"],
+    med:  ["Marshawn Lynch rushed for over 1300 yards in both 2011 and 2012 for which team?","Earl Thomas was considered the best free safety in the NFL playing for which team?","Steve Largent retired as the all-time receptions leader playing his entire career for which team?","The Legion of Boom secondary was considered the best in NFL history playing for which team?"],
+    hard: ["Shaun Alexander won the 2005 NFL MVP rushing for which team?","The 12th Man tradition was so significant which team retired the jersey number 12 for fans?","Dave Krieg threw for over 3300 yards in multiple seasons during the 1980s for which team?","Which team beat the heavily favored Denver Broncos 43-8 in Super Bowl XLVIII?"]
+  }
 };
 
 var PLAYERS = {
@@ -576,6 +571,8 @@ var ALL_TEAMS = [
 // ==================== GAME STATE ====================
 var G = {
   name:'',
+  difficulty:'med',
+  favTeam:'',
   div:'AFC East',
   collected:{},
   qIdx:{},
@@ -614,6 +611,42 @@ function show(id) {
   });
 }
 
+function selectDiff(d) {
+  G.difficulty = d;
+  document.querySelectorAll('.diff-btn').forEach(function(b){b.classList.remove('sel');});
+  document.querySelector('.diff-btn.'+d).classList.add('sel');
+}
+
+function selectTeam(name) {
+  G.favTeam = name;
+  document.querySelectorAll('.tm-btn').forEach(function(b){b.classList.remove('sel');});
+  var btn = document.getElementById('tm_'+name);
+  if(btn){
+    btn.classList.add('sel');
+    var info = TEAMS[name];
+    btn.style.background = info.p;
+    btn.style.borderColor = info.s;
+    btn.style.color = '#fff';
+  }
+}
+
+function buildTeamGrid() {
+  var grid = document.getElementById('teamGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  var emMap = {};
+  ALL_TEAMS.forEach(function(t){ emMap[t.n] = t.e; });
+  Object.keys(TEAMS).forEach(function(name) {
+    var info = TEAMS[name];
+    var btn = document.createElement('button');
+    btn.className = 'tm-btn';
+    btn.id = 'tm_' + name;
+    btn.innerHTML = '<span class="tm-em">'+(emMap[name]||'🏈')+'</span><span>'+info.a+'</span>';
+    btn.onclick = function(){ selectTeam(name); };
+    grid.appendChild(btn);
+  });
+}
+
 function startGame() {
   var name = document.getElementById('nameInput').value.trim();
   if(!name){alert('Please enter your name first!');return;}
@@ -622,6 +655,16 @@ function startGame() {
   buildTabs();
   show('game');
   document.getElementById('hdrName').textContent = name;
+  // Show fav team badge in header
+  var favEl = document.getElementById('hdrFav');
+  if(G.favTeam && favEl) {
+    var info = TEAMS[G.favTeam];
+    favEl.textContent = info.a;
+    favEl.style.background = info.p;
+    favEl.style.borderColor = info.s;
+    favEl.style.color = '#fff';
+    favEl.classList.remove('hidden');
+  }
   selectDiv('AFC East');
 }
 
@@ -676,8 +719,9 @@ function nextQ() {
   // Pick random uncollected team as correct
   var correct=uncollected[Math.floor(Math.random()*uncollected.length)];
   var wrong=teams.filter(function(t){return t!==correct;});
-  // Get question
-  var qs=TRIVIA[correct]||['Which team is this?'];
+  // Get question for selected difficulty
+  var tData=TRIVIA[correct]||{};
+  var qs=tData[G.difficulty]||tData.easy||tData.med||['Which team is this?'];
   var qi=G.qIdx[correct]%qs.length;
   G.qIdx[correct]++;
   var q=qs[qi];
@@ -992,11 +1036,12 @@ window.addEventListener('load', function(){
   } catch(e){ console.log('QR error',e); }
 });
 
-// Enter key support
+// Enter key support + build team grid
 document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('nameInput').addEventListener('keydown',function(e){
     if(e.key==='Enter')startGame();
   });
+  buildTeamGrid();
 });
 </script>
 </body>
